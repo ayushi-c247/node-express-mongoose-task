@@ -219,20 +219,33 @@ const userAndBlog = async (req, res) => {
         for (let index = 0; index < blogdata.length; index++) {
             userblogadata.blogs.push(blogdata[index]);
         }
+
         console.log("i m here gfht");
         await userblogadata.save()
 
+        // const addcomment= await commentModel.find()
+        //  console.log("addcomment",addcomment);
+        //  for (let index = 0; index < addcomment.length; index++) {
+        // userblogadata.comments.push(addcomment[index]);
+        //  }
+        // await  blogdataa.save()
+
+
         const userblogadataa = await userModel.findById({ _id: req.user.id }).populate("blogs").exec()
-        
-        //console.log("userblogadataaass", userblogadataa);
+        //await blogModel.find({ authorId: req.user.id }).populate({ path: "blogs", populate: {path: "comments" 
+        //       }
+        //    })
+        console.log("userblogadataaass", userblogadataa);
         return res.status(200).json({
             userAndBlogData: userblogadataa
         });
 
 
 
-// //comments
-         const commentData = await commentModel.find({blogId:blogdata._id}).populate("comments")
+        // //comments
+        //  const commentData = await commentModel.find({blogId:blogdata._id});
+        //   const blogdataa = await blogModel.find({ authorId: req.user.id });
+
         //  console.log("commentData",commentData);
         //  for(var i=0;i<commentData.length;i++){
         //      for(var j=i;j<commentData.length;j++){
@@ -247,15 +260,15 @@ const userAndBlog = async (req, res) => {
         //      }
         //  }
         //  }
-              
-         
-         //const userblogadataa = await userModel.findById({ _id: req.user.id }).populate({ path: "blogs", populate: { path: "comments" }}).exec();
-         
-         
+
+
+        //const userblogadataa = await userModel.findById({ _id: req.user.id }).populate({ path: "blogs", populate: { path: "comments" }}).exec();
+
+
         //  return res.status(200).json({
         //    userblogadataa: userblogadataa
         // });
-//end comments
+        //end comments
 
 
 

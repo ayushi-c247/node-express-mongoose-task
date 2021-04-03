@@ -13,7 +13,7 @@
 // return user.save().then(() => {
 //   return token;
 // });
-
+const message = require("./constant")
 
 
 const jwt = require("jsonwebtoken");

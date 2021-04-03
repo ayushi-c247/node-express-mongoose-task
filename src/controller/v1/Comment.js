@@ -30,6 +30,7 @@ const addComment = async (req, res) => {
                     body
                 });
                 console.log("my comments", newComment);
+    
                 return res.status(200).json({ status: message.STATUS_COMMENT_SUCCESS, userdata: newComment, });
             }
         } else {

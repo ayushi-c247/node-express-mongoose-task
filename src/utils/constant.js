@@ -58,7 +58,9 @@ const message = {
     VIEW_BLOG_COMMENT_CATCH: "Could not see blog comment please check try block",
     VIEW_BLOG_COMMENT: "View your Blog Comments",
     UPDATE_COMMENT_CATCH: "Could not update comment please check try block",
-    UPDATE_COMMENT: "Update Comment Successfully!!!!!!!!!!!!!!!!!"
+    UPDATE_COMMENT: "Update Comment Successfully!!!!!!!!!!!!!!!!!",
+    ADMIN_NOT_EXITS: "Admin not exists",
+    PASSWORD_EMAIL_ERROR: "Please check email and password"
 
 }
 
