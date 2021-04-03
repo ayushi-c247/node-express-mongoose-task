@@ -5,7 +5,7 @@ const { CommentController } = require("../../controller/v1");
 
 router.post("/addComment", token, CommentController.addComment);
 router.get("/viewAllComment", token, CommentController.viewAllComment);
-router.get("/viewBlogComment", token, CommentController.viewBlogComment);
+router.get("/viewBlogComment/:id", token, CommentController.viewBlogComment);
 router.patch("/updateComment", token, CommentController.updateComment);
 router.delete("/delete-comment", token, CommentController.deleteComment);
 router.delete("/deleteAllComment", token, CommentController.deleteAllComment);

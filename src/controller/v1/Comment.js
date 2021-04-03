@@ -5,21 +5,26 @@ const userModel = require("../../models/user");
 const message = require("../../utils/constant");
 const commentModel = require("../../models/comment");
 
+
 //****************** Add Comments */
-const addComment = async (res, req) => {
+const addComment = async (req, res) => {
     try {
-        const userId = await userModel.find({ _id: req.user.id });
-        console.log("userId", userId);
-        if (userId === null) {
-            return res.status(500).json({ error: message.USER_NOT_EXITS });
+        console.log("req.user.id",req.user.id);
+        const user = await userModel.findById({_id:req.user.id});
+        console.log("In addcomment ", user);
+        if (!user) {
+            return res.status(200).json({
+                message: message.USER_NOT_EXITS,
+            });
         }
-        const { body, blogId } = req.body;
-        const findBlog = await blogModel.findById({ _id: blogId })
+
+        const { body, blogId, } = req.body;
+        const findBlog = await blogModel.find({ _id: blogId })
         if (findBlog) {
             if (req.user.id == findBlog[0].authorId) {
                 return res.status(404).json({ error: message.DO_NOT_COMMENT });
             } else {
-                let newComment = new commentModel.create({
+                let newComment = await commentModel.create({
                     userId: req.user.id,
                     blogId,
                     body
@@ -38,7 +43,7 @@ const addComment = async (res, req) => {
 
 
 //********* View All Comments */
-const viewAllComment = async (res, req) => {
+const viewAllComment = async (req, res) => {
     try {
         const userId = await userModel.find({ _id: req.user.id });
         console.log("userId", userId);
@@ -56,7 +61,7 @@ const viewAllComment = async (res, req) => {
 
 
 //************* View Blog Wise Comments */
-const viewBlogComment = async (res, req) => {
+const viewBlogComment = async (req, res) => {
     try {
         const userId = await userModel.find({ _id: req.user.id });
         console.log("userId", userId);
@@ -75,7 +80,7 @@ const viewBlogComment = async (res, req) => {
 
 
 //*********************** Update Comment */
-const updateComment = async (res, req) => {
+const updateComment = async (req, res) => {
 
     try {
         const userId = await userModel.find({ _id: req.user.id });

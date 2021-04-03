@@ -3,6 +3,7 @@ const { body, validationResult } = require("express-validator");
 const blogModel = require("../../models/blog");
 const userModel = require("../../models/user");
 const message = require("../../utils/constant");
+const commentModel = require("../../models/comment");
 
 //************** Add Blog */
 
@@ -214,19 +215,50 @@ const userAndBlog = async (req, res) => {
         console.log("blogdata", blogdata);
         const userblogadata = await userModel.findById({ _id: req.user.id })
         console.log("i m here one");
+        userblogadata.blogs.splice(blogdata);
         for (let index = 0; index < blogdata.length; index++) {
-            //if (userblogadata.blogs.indexOf(blogdata) === -1)
             userblogadata.blogs.push(blogdata[index]);
         }
         console.log("i m here gfht");
         await userblogadata.save()
 
-        //const userblogadataa = await userModel.findById({ _id: req.user.id }).populate("blogs").exec()
-        //return userblogadata
+        const userblogadataa = await userModel.findById({ _id: req.user.id }).populate("blogs").exec()
+        
         //console.log("userblogadataaass", userblogadataa);
-        // return res.status(200).json({
-        //     userAndBlogData: userblogadataa
+        return res.status(200).json({
+            userAndBlogData: userblogadataa
+        });
+
+
+
+// //comments
+         const commentData = await commentModel.find({blogId:blogdata._id}).populate("comments")
+        //  console.log("commentData",commentData);
+        //  for(var i=0;i<commentData.length;i++){
+        //      for(var j=i;j<commentData.length;j++){
+        //      if (commentData[i].userId == blogdata[j].authorId) { // && commentData[i].blogId == blogdata[j]._id
+        //          const myCommentData= await blogModel.find({authorId:commentData.userId})
+        //         // myCommentData.comments.splice(commentData);
+        // for (let index = 0; index < commentData.length; index++) {
+        //     myCommentData.comments.push(commentData[index]);
+        // }
+        // console.log("i m in comment if");
+        // await myCommentData.save()
+        //      }
+        //  }
+        //  }
+              
+         
+         //const userblogadataa = await userModel.findById({ _id: req.user.id }).populate({ path: "blogs", populate: { path: "comments" }}).exec();
+         
+         
+        //  return res.status(200).json({
+        //    userblogadataa: userblogadataa
         // });
+//end comments
+
+
+
     } catch (error) {
         console.log("userAndBlog", error);
         return res.status(500).json({ error: message.DELETE_IMAGE_ERROR_MESSAGE });
