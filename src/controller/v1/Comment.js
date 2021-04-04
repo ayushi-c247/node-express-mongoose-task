@@ -9,8 +9,8 @@ const commentModel = require("../../models/comment");
 //****************** Add Comments */
 const addComment = async (req, res) => {
     try {
-        console.log("req.user.id",req.user.id);
-        const user = await userModel.findById({_id:req.user.id});
+        console.log("req.user.id", req.user.id);
+        const user = await userModel.findById({ _id: req.user.id });
         console.log("In addcomment ", user);
         if (!user) {
             return res.status(200).json({
@@ -18,19 +18,43 @@ const addComment = async (req, res) => {
             });
         }
 
-        const { body, blogId, } = req.body;
-        const findBlog = await blogModel.find({ _id: blogId })
+        const { body, blogId, likes, dislikes } = req.body;
+        const findBlog = await blogModel.findOne({ _id: blogId })
         if (findBlog) {
-            if (req.user.id == findBlog[0].authorId) {
+            if (req.user.id == findBlog.authorId) {
                 return res.status(404).json({ error: message.DO_NOT_COMMENT });
             } else {
+                if (likes == "true") {
+                    findBlog.likes++
+                } else {
+                    if (likes === "false") {
+                        findBlog.likes--;
+                    }
+                }
+                if (dislikes == "true") {
+                    findBlog.dislikes++;
+                } else if (dislikes === "false") {
+                    findBlog.dislikes--;
+                }
+                let blogData = {
+                    likes: findBlog.likes,
+                    dislikes: findBlog.dislikes
+                }
                 let newComment = await commentModel.create({
                     userId: req.user.id,
                     blogId,
                     body
                 });
+
+                await blogModel.updateOne({ _id: blogId }, blogData, function (err, user) {
+                    if (err) {
+                        return res.status(500).json({ message: message.COMMENT_UPDATE_ERROR })
+                    } else {
+                        console.log("blogdata", blogData);
+                        return res.status(500).json({ message: message.COMMENT_ADD_SUCCESS })
+                    }
+                });
                 console.log("my comments", newComment);
-    
                 return res.status(200).json({ status: message.STATUS_COMMENT_SUCCESS, userdata: newComment, });
             }
         } else {

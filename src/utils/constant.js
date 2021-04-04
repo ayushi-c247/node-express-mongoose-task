@@ -60,7 +60,8 @@ const message = {
     UPDATE_COMMENT_CATCH: "Could not update comment please check try block",
     UPDATE_COMMENT: "Update Comment Successfully!!!!!!!!!!!!!!!!!",
     ADMIN_NOT_EXITS: "Admin not exists",
-    PASSWORD_EMAIL_ERROR: "Please check email and password"
+    PASSWORD_EMAIL_ERROR: "Please check email and password",
+    COMMENT_UPDATE_ERROR: "Comment can not update",
 
 }
 
