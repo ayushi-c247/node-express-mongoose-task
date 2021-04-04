@@ -42,7 +42,7 @@ const addComment = async (req, res) => {
                 }
                 let newComment = await commentModel.create({
                     userId: req.user.id,
-                    blogId,
+                    blogId: blogId,
                     body
                 });
 

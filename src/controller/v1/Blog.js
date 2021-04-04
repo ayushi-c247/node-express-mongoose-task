@@ -212,63 +212,37 @@ const userAndBlog = async (req, res) => {
         }
         //const comment = "hello comment";
         const blogdata = await blogModel.find({ authorId: req.user.id })
-        console.log("blogdata", blogdata);
+        // console.log("blogdata", blogdata);
         const userblogadata = await userModel.findById({ _id: req.user.id })
-        console.log("i m here one");
+        // console.log("i m here one");
         userblogadata.blogs.splice(blogdata);
         for (let index = 0; index < blogdata.length; index++) {
             userblogadata.blogs.push(blogdata[index]);
         }
 
-        console.log("i m here gfht");
+        // console.log("i m here gfht");
+        const blog = await blogModel.aggregate([
+
+            {
+                $lookup: {
+                    from: "comments",
+                    as: "Comments",
+                    foreignField: "id",
+                    localField: "blogId"
+                }
+            },
+
+        ])
+        console.log(blog, "========================")
+        // res.json(blog)
         await userblogadata.save()
-
-        // const addcomment= await commentModel.find()
-        //  console.log("addcomment",addcomment);
-        //  for (let index = 0; index < addcomment.length; index++) {
-        // userblogadata.comments.push(addcomment[index]);
-        //  }
-        // await  blogdataa.save()
-
-
         const userblogadataa = await userModel.findById({ _id: req.user.id }).populate("blogs").exec()
-        //await blogModel.find({ authorId: req.user.id }).populate({ path: "blogs", populate: {path: "comments" 
-        //       }
-        //    })
-        console.log("userblogadataaass", userblogadataa);
+        console.log("userblogadataaass", userblogadataa, blog);
         return res.status(200).json({
-            userAndBlogData: userblogadataa
+            userAndBlogData: userblogadataa, blog
         });
 
 
-
-        // //comments
-        //  const commentData = await commentModel.find({blogId:blogdata._id});
-        //   const blogdataa = await blogModel.find({ authorId: req.user.id });
-
-        //  console.log("commentData",commentData);
-        //  for(var i=0;i<commentData.length;i++){
-        //      for(var j=i;j<commentData.length;j++){
-        //      if (commentData[i].userId == blogdata[j].authorId) { // && commentData[i].blogId == blogdata[j]._id
-        //          const myCommentData= await blogModel.find({authorId:commentData.userId})
-        //         // myCommentData.comments.splice(commentData);
-        // for (let index = 0; index < commentData.length; index++) {
-        //     myCommentData.comments.push(commentData[index]);
-        // }
-        // console.log("i m in comment if");
-        // await myCommentData.save()
-        //      }
-        //  }
-        //  }
-
-
-        //const userblogadataa = await userModel.findById({ _id: req.user.id }).populate({ path: "blogs", populate: { path: "comments" }}).exec();
-
-
-        //  return res.status(200).json({
-        //    userblogadataa: userblogadataa
-        // });
-        //end comments
 
 
 

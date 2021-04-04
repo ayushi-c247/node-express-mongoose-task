@@ -8,11 +8,11 @@ const commentSchema = new Schema(
             maxLength: 255,
         },
         userId: {
-             type: mongoose.Schema.Types.ObjectId,
-         ref: "User",
+             type:String,
+        //  ref: "User",
         },
         blogId:  { 
-            type: Schema.Types.ObjectId, ref: 'Blog' ,
+            type:String, ref: 'Blog' ,
         },
     },
     {
