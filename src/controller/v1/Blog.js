@@ -1,4 +1,7 @@
 const moment = require("moment");
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
+
 const { body, validationResult } = require("express-validator");
 const blogModel = require("../../models/blog");
 const userModel = require("../../models/user");
@@ -6,7 +9,7 @@ const message = require("../../utils/constant");
 const commentModel = require("../../models/comment");
 
 //************** Add Blog */
-
+// console.log(ObjectId)
 
 const userBlog = async (req, res) => {
     console.log("i am inside user blog");
@@ -219,7 +222,7 @@ const userAndBlog = async (req, res) => {
         for (let index = 0; index < blogdata.length; index++) {
             userblogadata.blogs.push(blogdata[index]);
         }
-
+    
         // console.log("i m here gfht");
         const blog = await blogModel.aggregate([
 
@@ -231,10 +234,9 @@ const userAndBlog = async (req, res) => {
                     localField: "blogId"
                 }
             },
-
+            
         ])
-        console.log(blog, "========================")
-        // res.json(blog)
+
         await userblogadata.save()
         const userblogadataa = await userModel.findById({ _id: req.user.id }).populate("blogs").exec()
         console.log("userblogadataaass", userblogadataa, blog);

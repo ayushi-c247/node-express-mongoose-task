@@ -1,0 +1,47 @@
+<html>
+
+
+
+<%- include('headers'); -%>
+    <% if(users.length>0) { %>
+        <table border="1">
+            <tr>
+                <th>S-No.</th>
+                <th>User_id</th>
+                <th>Blogs</th>
+            </tr>
+            <% for(var i=0; i<users.length; i++) { %>
+                <tr>
+                    <td>
+                        <%= i %>
+                    </td>
+                    <td>
+                        <%= users[i]._id%>
+                    </td>
+                    <% for(var j=0; j<blog.length; j++) { %>
+                        <td>
+
+                            <%=blog[j]._authorId%>
+                                <% if(users[i]._id===blog[j]._authorId ){ %>
+                                    <%=blog[j]._id%>
+                                        <% } else { %>
+
+                                            <% } %>
+
+                        </td>
+                        <% } %>
+
+                            <td>
+                                <a href='/delete/<%= users[i]._id %>'>Delete</a> |
+
+                            </td>
+                </tr>
+                <% } %>
+
+        </table>
+        <% } else { %>
+            No Record Found
+            <% } %>
+
+
+</html>

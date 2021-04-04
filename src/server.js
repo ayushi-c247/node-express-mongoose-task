@@ -1,15 +1,16 @@
 var express = require("express");
-//var multer = require("multer");
 var http = require("http");
 var cors = require("cors");
 var path = require("path");
-//var bodyParser = require("body-parser");
-var { connect } = require("mongoose");
 var dotenv = require("dotenv");
+
+
+var { connect } = require("mongoose");
 
 const router = require("./router");
 const seeder = require("./seeders")
 dotenv.config();
+
 
 var app = express();
 
@@ -28,11 +29,17 @@ connect(process.env.DB_URI, {
   });
 
 
+// view engine setup
+
+
+
 
 // import router from './routes';
 // parse application/x-www-form-urlencoded, basically can only parse incoming Request Object if strings or arrays
 app.use(express.urlencoded({ extended: false }));
+app.set('views', path.join(__dirname, '/views'));
 
+app.set('view engine', 'ejs');
 app.use("./uploads", express.static(path.join(__dirname, 'uploads')));
 //console.log("upload folder path", path.join(__dirname, 'uploads'));
 // parse application/json
