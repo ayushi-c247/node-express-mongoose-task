@@ -8,6 +8,7 @@ const userModel = require("../../models/user");
 const blogModel = require("../../models/blog");
 const commentModel = require("../../models/comment");
 
+
 const adminLogin = async (req, res) => {
     const errors = validationResult(req);
 
@@ -60,7 +61,7 @@ const adminLogin = async (req, res) => {
 };
 
 const helloprogram = async (req, res) => {
-    res.render("index.ejs", { emailerr: " ", passworderr: " ", emailValue: "", users: "", blog: "" });
+    res.render("index.ejs", { emailerr: " ", passworderr: " ", emailValue: "", users: "", blog: "", comments: " ", totalBlogs: "", comment: "" });
 }
 const login = async (req, res) => {
     var flag = 0;
@@ -90,7 +91,7 @@ const login = async (req, res) => {
     console.log("data", data[0]);
     if (email === data[0].email && password === data[0].password) {
 
-        const users = await userModel.find();
+
         // const totalUser = await userModel.countDocuments();
         // var element = [];
         // var count = 0, sno;
@@ -98,13 +99,43 @@ const login = async (req, res) => {
         //     sno = count++
         //     element.push(users[index]._id);
         // }
-        const blog = await blogModel.find();
+        const users = await userModel.find();
+        const comments = await commentModel.find();
+        const totalBlogs = await blogModel.find();
+        console.log("totalblog", totalBlogs);
+        const groupBlog = await blogModel.aggregate([
+            {
+                $group: {
+                    _id: '$authorId',
+                    blogid: { $addToSet: '$_id' },
+                    count: {
+                        $sum: 1,
+                    },
 
-        console.log("blog", blog);
+                },
+            },
+        ])
+        console.log(" groupBlog", groupBlog);
+        const groupComment = await commentModel.aggregate([
+            {
+                $group: {
+                    _id: '$userId',
+                    commentid: { $addToSet: '$_id' },
+                    count: {
+                        $sum: 1,
+                    },
+
+                },
+            },
+        ])
+        console.log(" groupComment", groupComment);
         res.render('dashbord.ejs', {
             users: users,
-            blog: blog,
-        })
+            blog: groupBlog,
+            comments: comments,
+            comment: groupComment,
+            totalBlogs: totalBlogs,
+        });
     } else {
         res.render('index.ejs', {
             emailValue: email,
@@ -114,11 +145,147 @@ const login = async (req, res) => {
     }
 }
 
+// const deleteUser = async (req, res) => {
+//     await userModel.findByIdAndRemove(req.params.id);
+//     res.redirect("dash");
+// }
+
+
+
+//*******************User Status Update */
+
+const userStatusUpdate = async (req, res) => {
+
+    const id = req.params.id;
+    const user = await userModel.findById({ _id: id })
+    if (user.status === "Inactive") {
+        var statusUpdate = {
+            status: 'Active'
+        }
+        await userModel.updateOne({ _id: id }, statusUpdate, function (err, change) {
+            if (err) {
+                res.json({
+                    error: messages.UPDATE_USER_ADMIN_ERROR,
+                });
+            }
+        });
+        res.redirect("../display");
+    } else {
+        if (user.status === "Active") {
+            var statusUpdate = {
+                status: 'Inactive'
+            }
+            await userModel.updateOne({ _id: id }, statusUpdate, function (err, change) {
+                if (err) {
+                    res.json({
+                        error: customMessage.Messages.UPDATE_USER_ADMIN_ERROR,
+                    });
+                }
+            });
+            res.redirect("../display");
+        }
+    }
+}
+
+//********************** Delete User*/
+
 const deleteUser = async (req, res) => {
-    await UsersModel.findByIdAndRemove(req.params.id);
+    const id = req.params.id;
+    const blog = await blogModel.find({ authorId: id });
+    const users = await userModel.findOne({ _id: id });
+    console.log("usr delete admin side", users);
+    if (users) {
+        if (blog.authorId == users._id);
+        await blogModel.deleteMany({ authorId: id });
+
+        await commentModel.deleteMany({ userId: id });
+        await userModel.findByIdAndRemove(id);
+    }
     res.redirect("../display");
 }
+
+
+// const deleteUser = async (req, res) => {
+//     const id = req.params.id;
+//     const blog = await blogModel.find({ authorId: id });
+//     const comment = await commentModel.find({ userId: id });
+//     const users = await userModel.findOne({ _id: id });
+//     console.log("usr delete admin side", users);
+//     if (users) {
+//         if (blog.authorId == users._id);
+//         await blogModel.deleteMany({ authorId: id });
+//         //await commentModel.deleteMany({ userId: id });
+//         await userModel.findByIdAndRemove(id);
+//     }
+//     res.redirect("../display");
+// }
+
+
+
 const display = async (req, res) => {
-    res.render('dashbord.ejs');
+    const users = await userModel.find();
+    const comments = await commentModel.find();
+    const totalBlogs = await blogModel.find();
+    const groupBlog = await blogModel.aggregate([
+        {
+            $group: {
+                _id: '$authorId',
+                blogid: { $addToSet: '$_id' },
+                count: {
+                    $sum: 1,
+                },
+
+            },
+        },
+    ])
+    const groupComment = await commentModel.aggregate([
+        {
+            $group: {
+                _id: '$userId',
+                commentid: { $addToSet: '$_id' },
+                count: {
+                    $sum: 1,
+                },
+
+            },
+        },
+    ])
+    res.render('dashbord.ejs', {
+        users: users,
+        blog: groupBlog,
+        comment: groupComment,
+        totalBlogs: totalBlogs,
+        comments: comments,
+    });
 }
-module.exports = { adminLogin, helloprogram, login, deleteUser, display }
+module.exports = { adminLogin, helloprogram, login, deleteUser, display, userStatusUpdate }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// <% if(blog) { %>
+//     <!-- for blog[0]._id===users[i]._id -->
+//     <!-- for  blog.length-->
+
+//     <% for(var j=0; j<blog.length; j++) { %>
+//         <% if(blog[j]._id==users[i]._id) { %>
+
+//             <% for(var k=0; k<blog[j].blogid.length; k++) { %>
+//                 <%=blog[j].blogid[k]%>
+
+//                     <% } %>
+//                         <% } else {%>
+//                             <% } %>
+//                                 <% } %>
+//                                     <% } %>

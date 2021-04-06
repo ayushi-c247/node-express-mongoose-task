@@ -1,4 +1,4 @@
-const { body, ValidationChain } = require("express-validator");
+const { body, checkSchema, check, validationResult } = require("express-validator/check");
 
 const LoginValidation = [
   body("email")
@@ -29,8 +29,6 @@ const RegistrationValidation = [
   body("name")
     .not()
     .isEmpty()
-    // .escape()
-    // .withMessage("Please enter name and name must have 5 character.")
     .withMessage("name contains only charactor"),
   body("email")
     .not()
@@ -46,18 +44,11 @@ const RegistrationValidation = [
     .trim()
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 character long."),
-  body("phone")
-    .not()
-    .isEmpty()
-    .withMessage("Please enter phone")
-    .trim()
-    .isLength({ max: 10, min: 10 })
-    .withMessage("Phone number should be conatain digits"),
   body("age").isBoolean(),
-  check('hobbie').isIn(['dance', 'games', 'drawing']),
+  check('hobbie').isIn(['Dance', 'Games', 'Drawing']),
   check('gender').isIn(['Male', 'Female', 'Other']),
-  //checkSchema(Schema),
-  // checkSchema(genderschema),
+  check('status').isIn(["Inactive", "Pending", "Active"]),
+  check('role').isIn(['admin', 'user']),
 
 ];
 
@@ -77,33 +68,5 @@ const blogvalidations = [
     .trim()
     .withMessage("Your ID is not Valid"),
 ];
-
-// const delevalidation = [
-//   params("email")
-//     .not()
-//     .isEmpty()
-//     .withMessage("Please enter email address.")
-//     .trim()
-//     .isEmail()
-//     .withMessage("Please enter valid email address"),
-//   // isLength({ max: 120 })
-// ];
-// const profilevalidation = [
-//   body("email")
-//     .not()
-//     .isEmpty()
-//     .withMessage("Please enter email address.")
-//     .trim()
-//     .isEmail()
-//     .withMessage("Please enter valid email address"),
-//   body("password")
-//     .not()
-//     .isEmpty()
-//     .withMessage("Please enter password.")
-//     .trim()
-//     .isLength({ min: 8 })
-//     .withMessage("Password must be at least 8 character long."),
-// ];
-
 
 module.exports = { LoginValidation, RegistrationValidation, changePwdvalidation, updateprofilevalidations, blogvalidations };

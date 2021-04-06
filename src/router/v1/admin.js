@@ -12,7 +12,7 @@ router.get("/a", AdminController.helloprogram);
 router.post("/process_post", AdminController.login);
 router.get("/delete/:id", AdminController.deleteUser);
 router.get("/display", AdminController.display);
-
+router.get("/userStatusUpdate/:id", AdminController.userStatusUpdate);
 
 
 module.exports = router;

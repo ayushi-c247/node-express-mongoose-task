@@ -1,47 +1,112 @@
 <html>
 
 
-
 <%- include('headers'); -%>
-    <% if(users.length>0) { %>
+    <% if(users && users.length>0) { %>
         <table border="1">
             <tr>
                 <th>S-No.</th>
                 <th>User_id</th>
+                <th>Name</th>
                 <th>Blogs</th>
+                <th>UsersBlog-comments</th>
+                <th>Comments-On-OtherBlog</th>
+                <th>Status</th>
+                <th>DeleteUser</th>
+                <th>Total Blogs</th>
+                <th>Total Comments</th>
+
+
             </tr>
             <% for(var i=0; i<users.length; i++) { %>
                 <tr>
                     <td>
-                        <%= i %>
+                        <%= i+1 %>
                     </td>
                     <td>
                         <%= users[i]._id%>
                     </td>
-                    <% for(var j=0; j<blog.length; j++) { %>
-                        <td>
+                    <td>
+                        <%= users[i].name%>
+                    </td>
+                    <td>
+                        <% if(blog) { %>
+                            <!-- for blog[0]._id===users[i]._id -->
+                            <!-- for  blog.length-->
 
-                            <%=blog[j]._authorId%>
-                                <% if(users[i]._id===blog[j]._authorId ){ %>
-                                    <%=blog[j]._id%>
-                                        <% } else { %>
+                            <% for(var j=0; j<blog.length; j++) { %>
+                                <% if(blog[j]._id==users[i]._id) { %>
+
+                                    <% for(var k=0; k<blog[j].blogid.length; k++) { %>
+                                        <%=blog[j].blogid[k]%>
 
                                             <% } %>
+                                                <% } else {%>
+                                                    <% } %>
+                                                        <% } %>
+                                                            <% } %>
 
-                        </td>
-                        <% } %>
+                    </td>
+                    <td>
 
-                            <td>
-                                <a href='/delete/<%= users[i]._id %>'>Delete</a> |
+                    </td>
+                    <td>
+                        <% if(comment) { %>
+                            <% for(var j=0; j<comment.length; j++) { %>
+                                <% if(comment[j]._id==users[i]._id) { %>
 
-                            </td>
+                                    <% for(var k=0; k<comment[j].commentid.length; k++) { %>
+                                        <%=comment[j].commentid[k]%>
+
+                                            <% } %>
+                                                <% } else {%>
+                                                    <% } %>
+                                                        <% } %>
+                                                            <% } %>
+                    </td>
+
+                    <td>
+                        <button onclick="window.location='/api/v1/admin/userStatusUpdate/<%= users[i]._id %>'">
+                            <%= users[i].status%>
+                        </button>
+                    </td>
+
+
+
+                    <td>
+                        <a href='/api/v1/admin/delete/<%= users[i]._id %>'>Delete</a>
+                    </td>
+
+                    <% } %>
+                        <% } else { %>
+                            No Record Found
+                            <% } %>
+                                <td>
+                                    <% if(totalBlogs) {%>
+                                        <% for(var j=0; j<totalBlogs.length; j++) { %>
+                                            <%= totalBlogs[j]._id%>
+                                                <% } %>
+                                                    <% } else { %>
+                                                        No Record Found
+                                                        <% } %>
+                                </td>
+                                <td>
+                                    <% if(comments){%>
+                                        <% for(var j=0; j<comments.length; j++) { %>
+                                            <%= comments[j]._id%>
+                                                <% } %>
+                                                    <% } else { %>
+                                                        No Record Found
+                                                        <% } %>
+                                </td>
                 </tr>
-                <% } %>
-
         </table>
-        <% } else { %>
-            No Record Found
-            <% } %>
+
+
+
+
+
+
 
 
 </html>

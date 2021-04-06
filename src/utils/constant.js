@@ -62,7 +62,12 @@ const message = {
     ADMIN_NOT_EXITS: "Admin not exists",
     PASSWORD_EMAIL_ERROR: "Please check email and password",
     COMMENT_UPDATE_ERROR: "Comment can not update",
-
+    DELETE_ALL_COMMENT_SUCCESS: "Delete All comments Successfully",
+    DELETE_COMMENT_CATCH: "Could not delete comment please check try block",
+    DELETE_ALL_COMMENT_CATCH: "Could not delete comment please check try block",
+    DELETE_COMMENT_SUCCESS: "Delete comment successfully",
+    UPDATE_USER_ADMIN_ERROR: "Admin does not update status",
+    USER_STATUS_FAILD: "User status failed please contact admin",
 }
 
 

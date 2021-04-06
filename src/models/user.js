@@ -20,12 +20,11 @@ const userSchema = new Schema({
   email: { type: String, default: " ", required: true },
   gender: { type: String, default: "", enum: ["", "Male", "Female", "Other"] }, // M,F,O
   image: { type: String, default: " ", },
-  //image: { data: Buffer, contentType: String },
   password: { type: String, default: null },
   status: {
     type: String,
     default: "Inactive",
-    enum: ["Pending", "Active", "Inactive"],
+    enum: ["Inactive", "Pending", "Active"],
   },
   blogs: [{
     type: mongoose.Schema.Types.ObjectId,

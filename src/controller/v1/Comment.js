@@ -132,10 +132,41 @@ const updateComment = async (req, res) => {
 
 
 //****************************Delete Comment */
-const deleteComment = async (res, req) => { }
+const deleteComment = async (res, req) => {
+    try {
+        const userId = await userModel.find({ _id: req.user.id });
+        console.log("userId", userId);
+        if (userId === null) {
+            return res.status(500).json({ error: message.USER_NOT_EXITS });
+        }
+        const id = trq.params.id
+        const findCommentId = await commentModel.find({ _id: id });
+        if (findCommentId) {
+            await commentModel.deleteOne({ _id:findCommentId });
+            return res.status(200).json({ message: message.DELETE_COMMENT_SUCCESS, });
+        }
+    } catch (error) {
+        console.log("delete comment catch =", error);
+        return res.status(500).json({ error: message.DELETE_COMMENT_CATCH });
+    }
 
-
+}
 //***************** Delete Blog-wise All Comments  */
-const deleteAllComment = async (res, req) => { }
+const deleteAllComment = async (res, req) => {
+    try {
+        const userId = await userModel.find({ _id: req.user.id });
+        console.log("userId", userId);
+        if (userId === null) {
+            return res.status(500).json({ error: message.USER_NOT_EXITS });
+        }
+        await commentModel.deleteMany();
+        return res.status(200).json({ message: message.DELETE_ALL_COMMENT_SUCCESS, });
+    } catch (error) {
+        console.log("delete allcomment catch =", error);
+        return res.status(500).json({ error: message.DELETE_ALL_COMMENT_CATCH });
+    }
+
+}
+
 
 module.exports = { addComment, viewAllComment, deleteComment, updateComment, deleteAllComment, viewBlogComment }

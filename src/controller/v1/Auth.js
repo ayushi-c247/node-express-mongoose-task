@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
 const message = require("../../utils/constant")
 const userModel = require("../../models/user");
-const blogModel = require("../../models/blog");
 
 
 const registration = async (req, res) => {
@@ -45,9 +44,7 @@ const registration = async (req, res) => {
       }
 
       var user = new userModel(data);
-      console.log("encrupffvf", user.password);
       user.save(function (error) {
-        console.log(user);
         if (error) {
           throw error;
         }
@@ -78,38 +75,42 @@ const login = async (req, res) => {
   }
 
   try {
+
     const { email, password, role } = req.body;
+
     if (role === "user") {
+
       let user = await userModel.findOne({
         email
       });
-      console.log("userdetails", user);
       if (!user) {
         return res.status(400).json({
           message: message.USER_NOT_EXITS
         });
       }
-      const isMatch = await bcrypt.compareSync(password, user.password);
-      console.log("ismatch", isMatch);
-      if (!isMatch) {
-        return res.status(400).json({
-          message: message.PASSWORD
-        });
-      }
-      const access = {
-        user: {
-          id: user._id,
-          role: user.role,
+      if (user.status === "Active") {
+        const isMatch = await bcrypt.compareSync(password, user.password);
+        console.log("ismatch", isMatch);
+        if (!isMatch) {
+          return res.status(400).json({
+            message: message.PASSWORD
+          });
         }
-      };
-      console.log("accccv", access);
+        const access = {
+          user: {
+            id: user._id,
+            role: user.role,
+          }
+        };
+        let token = jwt.sign(access, "config.secret", {
+          expiresIn: 86400 // expires in 24 hours
+        });
+        console.log("token", token);
 
-      let token = jwt.sign(access, "config.secret", {
-        expiresIn: 86400 // expires in 24 hours
-      });
-      console.log("token", token);
-
-      return res.json({ message: message.LOGIN_SUCCESS, token: token });
+        return res.json({ message: message.LOGIN_SUCCESS, token: token });
+      } else {
+        return res.status(500).json({ message: message.USER_STATUS_FAILD })
+      }
     } else {
       return res.status(500).json({ message: message.USER_FAILD })
     }
@@ -157,11 +158,9 @@ const updateProfile = async (req, res) => {
 
     const { name, age, gender, hobbie, } = req.body
     const userupdates = await userModel.findById(req.user.id);
-    console.log("(userupdates", userupdates);
     if (!userupdates) {
       return res.status(500).json({ error: message.USER_NOT_EXITS });
     } else {
-      console.log("elseupdate");
       var file = req.files;
       var updateddata = {
         age: age || userupdates.age,
@@ -194,6 +193,7 @@ const updateProfile = async (req, res) => {
 
 
 //*****************delete-profile */
+
 const deleteProfile = async (req, res) => {
   const errors = validationResult(req);
 
@@ -205,7 +205,6 @@ const deleteProfile = async (req, res) => {
   try {
     console.log("delete");
     const user = await userModel.findById(req.user.id);
-    console.log("In delete ", user);
     if (!user) {
       return res.status(200).json({
         message: message.DELETE_PROFILE_FAILD,
@@ -237,7 +236,6 @@ const deleteProfileImage = async (req, res) => {
   try {
     console.log("deleteProfileImage");
     const user = await userModel.findById(req.user.id);
-    console.log("In deleteProfileImage ", user);
     if (!user) {
       return res.status(500).json({
         message: message.DELETE_PROFILE_FAILD,
@@ -253,7 +251,7 @@ const deleteProfileImage = async (req, res) => {
     }
 
   } catch (error) {
-    console.log("delete error", error);
+    console.log("user delete error", error);
     return res.status(500).json({ error: message.DELETE_IMAGE_ERROR_MESSAGE });
   }
 };
@@ -268,24 +266,10 @@ const userAndBlog = async (req, res) => {
         message: message.DELETE_PROFILE_FAILD,
       });
     }
-    //const comment = "hello comment";
-    // const blogdata = await blogModel.find({ authorId: req.user.id })
-    // console.log("blogdata", blogdata);
-    // const userblogadata = await userModel.findById({ _id: req.user.id })
-    // console.log("i m here one");
-    // userblogadata.blogs.push(blogdata._id);
-    // console.log("i m here gfht");
-    // await userblogadata.save()
-    //return userblogadata
-    // await userModel.findById({ _id: req.user.id }).populate("blogs").exec()
     const blogdata = userModel.findOne({ _id: req.user.id })
       .populate('blogs').exec((err, posts) => {
         console.log("Populated User ", blogdata);
       })
-    //console.log("userblogadataaass", userblogadataaass);
-    // return res.status(200).json({
-    //   userAndBlogData: userAndBlogData
-    // });
 
   } catch (error) {
     console.log("userAndBlog", error);
