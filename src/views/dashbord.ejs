@@ -82,22 +82,14 @@
                             No Record Found
                             <% } %>
                                 <td>
-                                    <% if(totalBlogs) {%>
-                                        <% for(var j=0; j<totalBlogs.length; j++) { %>
-                                            <%= totalBlogs[j]._id%>
-                                                <% } %>
-                                                    <% } else { %>
-                                                        No Record Found
-                                                        <% } %>
+
+                                    <%= totalBlogs%>
+
                                 </td>
                                 <td>
-                                    <% if(comments){%>
-                                        <% for(var j=0; j<comments.length; j++) { %>
-                                            <%= comments[j]._id%>
-                                                <% } %>
-                                                    <% } else { %>
-                                                        No Record Found
-                                                        <% } %>
+
+                                    <%= comments%>
+
                                 </td>
                 </tr>
         </table>

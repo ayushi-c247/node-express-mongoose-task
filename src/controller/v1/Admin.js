@@ -1,6 +1,6 @@
 
 const jwt = require("jsonwebtoken");
-
+const dotenv = require('dotenv');
 const { body, validationResult } = require("express-validator");
 const message = require("../../utils/constant")
 const adminModel = require("../../models/admin");
@@ -60,16 +60,19 @@ const adminLogin = async (req, res) => {
     }
 };
 
-const helloprogram = async (req, res) => {
+const homePage = async (req, res) => {
     res.render("index.ejs", { emailerr: " ", passworderr: " ", emailValue: "", users: "", blog: "", comments: " ", totalBlogs: "", comment: "" });
 }
 const login = async (req, res) => {
     var flag = 0;
+    var adminDeatail = await adminModel.find();
+    console.log("admin deatails ", adminDeatail);
     const { email, password } = req.body;
     var response = {
         email: email,
         password: password,
     };
+    console.log("=====================", response);
     if (email == "") {
         var emailerr = "Please Enter Email";
         console.log("please Enter Email");
@@ -81,76 +84,24 @@ const login = async (req, res) => {
         console.log("please enter password")
 
     }
-    if (flag == 1)
+    if (flag == 1) {
         res.render('index.ejs', {
             emailValue: email,
             emailerr: emailerr,
             passworderr: passworderr,
         });
-    var data = await adminModel.find();
-    console.log("data", data[0]);
-    if (email === data[0].email && password === data[0].password) {
 
+    }
 
-        // const totalUser = await userModel.countDocuments();
-        // var element = [];
-        // var count = 0, sno;
-        // for (let index = 0; index < users.length; index++) {
-        //     sno = count++
-        //     element.push(users[index]._id);
-        // }
-        const users = await userModel.find();
-        const comments = await commentModel.find();
-        const totalBlogs = await blogModel.find();
-        console.log("totalblog", totalBlogs);
-        const groupBlog = await blogModel.aggregate([
-            {
-                $group: {
-                    _id: '$authorId',
-                    blogid: { $addToSet: '$_id' },
-                    count: {
-                        $sum: 1,
-                    },
-
-                },
-            },
-        ])
-        console.log(" groupBlog", groupBlog);
-        const groupComment = await commentModel.aggregate([
-            {
-                $group: {
-                    _id: '$userId',
-                    commentid: { $addToSet: '$_id' },
-                    count: {
-                        $sum: 1,
-                    },
-
-                },
-            },
-        ])
-        console.log(" groupComment", groupComment);
-        res.render('dashbord.ejs', {
-            users: users,
-            blog: groupBlog,
-            comments: comments,
-            comment: groupComment,
-            totalBlogs: totalBlogs,
-        });
+    if (email === adminDeatail[0].email && password === adminDeatail[0].password) {
+        res.redirect(`${process.env.hostPath}v1/admin/adminDashboard`);
     } else {
         res.render('index.ejs', {
-            emailValue: email,
             emailerr: emailerr,
             passworderr: passworderr,
         });
     }
 }
-
-// const deleteUser = async (req, res) => {
-//     await userModel.findByIdAndRemove(req.params.id);
-//     res.redirect("dash");
-// }
-
-
 
 //*******************User Status Update */
 
@@ -187,6 +138,7 @@ const userStatusUpdate = async (req, res) => {
     }
 }
 
+
 //********************** Delete User*/
 
 const deleteUser = async (req, res) => {
@@ -205,27 +157,10 @@ const deleteUser = async (req, res) => {
 }
 
 
-// const deleteUser = async (req, res) => {
-//     const id = req.params.id;
-//     const blog = await blogModel.find({ authorId: id });
-//     const comment = await commentModel.find({ userId: id });
-//     const users = await userModel.findOne({ _id: id });
-//     console.log("usr delete admin side", users);
-//     if (users) {
-//         if (blog.authorId == users._id);
-//         await blogModel.deleteMany({ authorId: id });
-//         //await commentModel.deleteMany({ userId: id });
-//         await userModel.findByIdAndRemove(id);
-//     }
-//     res.redirect("../display");
-// }
-
-
-
 const display = async (req, res) => {
     const users = await userModel.find();
-    const comments = await commentModel.find();
-    const totalBlogs = await blogModel.find();
+    const comments = await commentModel.countDocuments();
+    const totalBlogs = await blogModel.countDocuments();
     const groupBlog = await blogModel.aggregate([
         {
             $group: {
@@ -258,7 +193,53 @@ const display = async (req, res) => {
         comments: comments,
     });
 }
-module.exports = { adminLogin, helloprogram, login, deleteUser, display, userStatusUpdate }
+
+
+//*************************admin Dashboard */
+
+const adminDashboard = async (req, res) => {
+    const users = await userModel.find();
+    const comments = await commentModel.countDocuments();
+    const totalBlogs = await blogModel.countDocuments();
+    console.log("totalblog", totalBlogs);
+    const groupBlog = await blogModel.aggregate([
+        {
+            $group: {
+                _id: '$authorId',
+                blogid: { $addToSet: '$body' },
+                count: {
+                    $sum: 1,
+                },
+
+            },
+        },
+    ])
+    console.log(" groupBlog", groupBlog);
+    const groupComment = await commentModel.aggregate([
+        {
+            $group: {
+                _id: '$userId',
+                commentid: { $addToSet: '$body' },
+                count: {
+                    $sum: 1,
+                },
+
+            },
+        },
+    ])
+    console.log(" groupComment", groupComment);
+    res.render('dashbord.ejs', {
+        users: users,
+        blog: groupBlog,
+        comments: comments,
+        comment: groupComment,
+        totalBlogs: totalBlogs,
+    });
+
+
+
+}
+module.exports = { adminLogin, homePage, login, deleteUser, display, userStatusUpdate, adminDashboard }
 
 
 
