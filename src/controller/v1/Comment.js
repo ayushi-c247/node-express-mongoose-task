@@ -142,7 +142,7 @@ const deleteComment = async (res, req) => {
         const id = trq.params.id
         const findCommentId = await commentModel.find({ _id: id });
         if (findCommentId) {
-            await commentModel.deleteOne({ _id:findCommentId });
+            await commentModel.deleteOne({ _id: findCommentId });
             return res.status(200).json({ message: message.DELETE_COMMENT_SUCCESS, });
         }
     } catch (error) {

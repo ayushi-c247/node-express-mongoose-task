@@ -1,6 +1,6 @@
-
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const dotenv = require('dotenv');
+
 const { body, validationResult } = require("express-validator");
 const message = require("../../utils/constant")
 const adminModel = require("../../models/admin");
@@ -31,7 +31,13 @@ const adminLogin = async (req, res) => {
                 message: message.ADMIN_NOT_EXITS
             });
         }
-        if (email == admin.email && password == admin.password) {
+        const isMatch = await bcrypt.compareSync(password, admin.password);
+        console.log("ismatch", isMatch);
+        if (!isMatch) {
+            return res.status(400).json({
+                message: message.PASSWORD
+            });
+        } else {
             const access = {
                 admin: {
                     id: admin._id,
@@ -46,13 +52,7 @@ const adminLogin = async (req, res) => {
 
             return res.json({ message: message.LOGIN_SUCCESS, token: token });
 
-        } else {
-            return res.status(400).json({
-                message: message.PASSWORD
-            });
         }
-
-
 
     } catch (error) {
         console.log(error);
@@ -60,18 +60,24 @@ const adminLogin = async (req, res) => {
     }
 };
 
+
+
+
+//************************************************show user details by admin  */
+
 const homePage = async (req, res) => {
-    res.render("index.ejs", { emailerr: " ", passworderr: " ", emailValue: "", users: "", blog: "", comments: " ", totalBlogs: "", comment: "" });
+    res.render("index.ejs", { emailValue: "", emailerr: " ", passworderr: " ", emailValue: "", users: "", blog: "", comments: " ", totalBlogs: "", comment: "", blogByComment: "" });
 }
 const login = async (req, res) => {
     var flag = 0;
-    var adminDeatail = await adminModel.find();
-    console.log("admin deatails ", adminDeatail);
+
     const { email, password } = req.body;
     var response = {
         email: email,
         password: password,
     };
+    var adminDetail = await adminModel.findOne({ email: email });
+    console.log("admin deatails ", adminDetail);
     console.log("=====================", response);
     if (email == "") {
         var emailerr = "Please Enter Email";
@@ -81,24 +87,31 @@ const login = async (req, res) => {
     if (password == "") {
         flag = 1;
         var passworderr = "Please Enter Password";
-        console.log("please enter password")
+        console.log("please enter password");
+    }
+    if (email == null) {
+        flag = 1;
+        var emailValue = "Please enter correct email";
 
     }
     if (flag == 1) {
         res.render('index.ejs', {
-            emailValue: email,
+            emailValue: emailValue,
             emailerr: emailerr,
             passworderr: passworderr,
         });
 
     }
 
-    if (email === adminDeatail[0].email && password === adminDeatail[0].password) {
+    const isMatch = await bcrypt.compareSync(password, adminDetail.password);
+    console.log("ismatch", isMatch);
+    if (isMatch) {
         res.redirect(`${process.env.hostPath}v1/admin/adminDashboard`);
     } else {
         res.render('index.ejs', {
-            emailerr: emailerr,
-            passworderr: passworderr,
+            emailValue: email,
+            emailerr: "",
+            passworderr: "Password incorrect please enter correct password",
         });
     }
 }
@@ -185,12 +198,25 @@ const display = async (req, res) => {
             },
         },
     ])
+    const groupCommentByBlog = await commentModel.aggregate([
+        {
+            $group: {
+                _id: '$blogId',
+                commentid: { $addToSet: '$_id' },
+                count: {
+                    $sum: 1,
+                },
+
+            },
+        },
+    ])
     res.render('dashbord.ejs', {
         users: users,
         blog: groupBlog,
         comment: groupComment,
         totalBlogs: totalBlogs,
         comments: comments,
+        blogByComment: groupCommentByBlog,
     });
 }
 
@@ -206,7 +232,7 @@ const adminDashboard = async (req, res) => {
         {
             $group: {
                 _id: '$authorId',
-                blogid: { $addToSet: '$body' },
+                blogid: { $addToSet: '$title' },
                 count: {
                     $sum: 1,
                 },
@@ -219,7 +245,7 @@ const adminDashboard = async (req, res) => {
         {
             $group: {
                 _id: '$userId',
-                commentid: { $addToSet: '$body' },
+                commentid: { $addToSet: '$blogId' },
                 count: {
                     $sum: 1,
                 },
@@ -227,6 +253,21 @@ const adminDashboard = async (req, res) => {
             },
         },
     ])
+    //**************bolg wise comments
+    const groupCommentByBlog = await commentModel.aggregate([
+        {
+            $group: {
+                _id: '$blogId',
+                commentid: { $addToSet: '$_id' },
+                count: {
+                    $sum: 1,
+                },
+
+            },
+        },
+    ])
+    console.log("groupCommentByBlog", groupCommentByBlog);
+    //**************** */
     console.log(" groupComment", groupComment);
     res.render('dashbord.ejs', {
         users: users,
@@ -234,6 +275,7 @@ const adminDashboard = async (req, res) => {
         comments: comments,
         comment: groupComment,
         totalBlogs: totalBlogs,
+        blogByComment: groupCommentByBlog
     });
 
 

@@ -1,9 +1,13 @@
 <html>
 
 
-<%- include('headers'); -%>
-    <% if(users && users.length>0) { %>
-        <table border="1">
+<head>
+    <title></title>
+    <%- include('headers'); -%>
+</head>
+<% if(users && users.length>0) { %>
+    <table class="table table-bordered">
+        <thead class="thead-dark">
             <tr>
                 <th>S-No.</th>
                 <th>User_id</th>
@@ -15,9 +19,9 @@
                 <th>DeleteUser</th>
                 <th>Total Blogs</th>
                 <th>Total Comments</th>
-
-
             </tr>
+        </thead>
+        <tbody>
             <% for(var i=0; i<users.length; i++) { %>
                 <tr>
                     <td>
@@ -38,17 +42,30 @@
                                 <% if(blog[j]._id==users[i]._id) { %>
 
                                     <% for(var k=0; k<blog[j].blogid.length; k++) { %>
-                                        <%=blog[j].blogid[k]%>
+                                        <%=k+1%>.
+                                            <%=blog[j].blogid[k]%>
 
-                                            <% } %>
-                                                <% } else {%>
-                                                    <% } %>
+                                                <% } %>
+                                                    <% } else {%>
                                                         <% } %>
                                                             <% } %>
+                                                                <% } %>
 
                     </td>
                     <td>
+                        <% if(blog) { %>
+                            <% for(var j=0; j<blog.length; j++) { %>
+                                <% if(blog[j]._id==users[i]._id) { %>
 
+                                    <% for(var k=0; k<blog[j].blogid.length; k++) { %>
+                                        <%=k+1%>.
+                                            <%=blog[j].blogid[k]%>
+
+                                                <% } %>
+                                                    <% } else {%>
+                                                        <% } %>
+                                                            <% } %>
+                                                                <% } %>
                     </td>
                     <td>
                         <% if(comment) { %>
@@ -92,7 +109,8 @@
 
                                 </td>
                 </tr>
-        </table>
+        </tbody>
+    </table>
 
 
 
