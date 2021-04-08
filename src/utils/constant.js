@@ -53,24 +53,31 @@ const message = {
     DELETE_IMAGE_ERROR_MESSAGE: "Could not delete image please check try block!!",
     DO_NOT_COMMENT: "Your not comment on your own blog!!",
     STATUS_COMMENT_SUCCESS: "You did Comment Successfully !!!!!!!!!!!!!!!!!",
-    ADD_COMMENT_FAILD: "Blog Id not found please check try block",
-    VIEW_ALL_COMMENT_CATCH: "Could not see all comment please check try block",
-    VIEW_BLOG_COMMENT_CATCH: "Could not see blog comment please check try block",
-    VIEW_BLOG_COMMENT: "View your Blog Comments",
-    UPDATE_COMMENT_CATCH: "Could not update comment please check try block",
+    ADD_COMMENT_FAILD: "Blog Id not found please check try block!!",
+    VIEW_ALL_COMMENT_CATCH: "Could not see all comment please check try block!!",
+    VIEW_BLOG_COMMENT_CATCH: "Could not see blog comment please check try block!!",
+    VIEW_BLOG_COMMENT: "View your Blog Comments!!",
+    UPDATE_COMMENT_CATCH: "Could not update comment please check try block!!",
     UPDATE_COMMENT: "Update Comment Successfully!!!!!!!!!!!!!!!!!",
-    ADMIN_NOT_EXITS: "Admin not exists",
-    PASSWORD_EMAIL_ERROR: "Please check email and password",
-    COMMENT_UPDATE_ERROR: "Comment can not update",
-    DELETE_ALL_COMMENT_SUCCESS: "Delete All comments Successfully",
-    DELETE_COMMENT_CATCH: "Could not delete comment please check try block",
-    DELETE_ALL_COMMENT_CATCH: "Could not delete comment please check try block",
-    DELETE_COMMENT_SUCCESS: "Delete comment successfully",
-    UPDATE_USER_ADMIN_ERROR: "Admin does not update status",
-    USER_STATUS_FAILD: "User status failed please contact admin",
+    ADMIN_NOT_EXITS: "Admin not exists!!!!!!!!!!!!!!!!",
+    PASSWORD_EMAIL_ERROR: "Please check email and password!!",
+    COMMENT_UPDATE_ERROR: "Comment can not update!!",
+    DELETE_ALL_COMMENT_SUCCESS: "Delete All comments Successfully!!!!!!!!!!!!!!!!!!!",
+    DELETE_COMMENT_CATCH: "Could not delete comment please check try block!!",
+    DELETE_ALL_COMMENT_CATCH: "Could not delete comment please check try block!!",
+    DELETE_COMMENT_SUCCESS: "Delete comment successfully!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
+    UPDATE_USER_ADMIN_ERROR: "Admin does not update status!!",
+    USER_STATUS_FAILD: "User status failed please contact admin!!",
+    NO_USER_BLOG: "No Blogs !!!!!!",
+    USER_NOT_EXITS_LOGIN: "User not exists please provide correct email and check status of User!! ",
+    BLOG_UPDATE_FAILD: "Blog not found",
+    DELETE_COMMENT_FAILD: "You can not delete other's comments!!",
+    UPDATE_COMMENT_FAILD: "You can not update other's comments!!",
+    DELETE_ALL_COMMENT_FAILD: "Delete All comments faild!!",
+    DELETE_ALL_COMMENT_INCORRECT: "Id is null please provide correct Id"
 }
 
 
 
-
+//module exports
 module.exports = message

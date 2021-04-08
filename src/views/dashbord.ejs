@@ -44,7 +44,7 @@
                                     <% for(var k=0; k<blog[j].blogid.length; k++) { %>
                                         <%=k+1%>.
                                             <%=blog[j].blogid[k]%>
-
+                                                <br>
                                                 <% } %>
                                                     <% } else {%>
                                                         <% } %>
@@ -53,25 +53,12 @@
 
                     </td>
                     <td>
-                        <% if(blog) { %>
-                            <% for(var j=0; j<blog.length; j++) { %>
-                                <% if(blog[j]._id==users[i]._id) { %>
 
-                                    <% for(var k=0; k<blog[j].blogid.length; k++) { %>
-                                        <%=k+1%>.
-                                            <%=blog[j].blogid[k]%>
-
-                                                <% } %>
-                                                    <% } else {%>
-                                                        <% } %>
-                                                            <% } %>
-                                                                <% } %>
                     </td>
                     <td>
                         <% if(comment) { %>
                             <% for(var j=0; j<comment.length; j++) { %>
                                 <% if(comment[j]._id==users[i]._id) { %>
-
                                     <% for(var k=0; k<comment[j].commentid.length; k++) { %>
                                         <%=comment[j].commentid[k]%>
 
@@ -83,7 +70,8 @@
                     </td>
 
                     <td>
-                        <button onclick="window.location='/api/v1/admin/userStatusUpdate/<%= users[i]._id %>'">
+                        <button type="button" class="btn btn-danger"
+                            onclick="window.location='/api/v1/admin/userStatusUpdate/<%= users[i]._id %>'">
                             <%= users[i].status%>
                         </button>
                     </td>
@@ -91,7 +79,11 @@
 
 
                     <td>
-                        <a href='/api/v1/admin/delete/<%= users[i]._id %>'>Delete</a>
+                        <button type="button" class="btn btn-info"
+                            onclick="window.location='/api/v1/admin/delete/<%= users[i]._id %>'">
+                            Delete
+                        </button>
+
                     </td>
 
                     <% } %>

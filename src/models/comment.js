@@ -8,16 +8,16 @@ const commentSchema = new Schema(
             maxLength: 255,
         },
         userId: {
-             type:String,
-        //  ref: "User",
+            type: String,
         },
-        blogId:  { 
-            type:String, ref: 'Blog' ,
+        blogId: {
+            type: String, ref: 'Blog',
         },
     },
     {
         timestamps: true,
     },
 );
+
 
 module.exports = mongoose.model("Comment", commentSchema);

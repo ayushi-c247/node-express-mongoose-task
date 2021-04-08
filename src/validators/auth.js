@@ -15,6 +15,7 @@ const LoginValidation = [
     .trim()
     .isLength({ min: 6 })
     .withMessage("Password must be at least 8 character long."),
+  check('role').isIn(['admin', 'user']),
 ];
 const changePwdvalidation = [
   body("newpassword")
@@ -45,7 +46,6 @@ const RegistrationValidation = [
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 character long."),
   body("age").isBoolean(),
-  check('hobbie').isIn(['Dance', 'Games', 'Drawing']),
   check('gender').isIn(['Male', 'Female', 'Other']),
   check('status').isIn(["Inactive", "Pending", "Active"]),
   check('role').isIn(['admin', 'user']),
@@ -59,7 +59,6 @@ const updateprofilevalidations = [
     .withMessage("Please enter email address.")
     .trim()
     .isEmail()
-    .withMessage("Please enter valid email address"),
 ];
 const blogvalidations = [
   body("authorID")

@@ -3,8 +3,6 @@ var http = require("http");
 var cors = require("cors");
 var path = require("path");
 var dotenv = require("dotenv");
-
-
 var { connect } = require("mongoose");
 
 const router = require("./router");
@@ -28,21 +26,13 @@ connect(process.env.DB_URI, {
     console.log("Error in database connection", err.message);
   });
 
-
-// view engine setup
-
-
-
-
-// import router from './routes';
-// parse application/x-www-form-urlencoded, basically can only parse incoming Request Object if strings or arrays
 app.use(express.urlencoded({ extended: false }));
 app.set('views', path.join(__dirname, '/views'));
 
+// setup view engine
 app.set('view engine', 'ejs');
+// Image Path
 app.use("./uploads", express.static(path.join(__dirname, 'uploads')));
-//console.log("upload folder path", path.join(__dirname, 'uploads'));
-// parse application/json
 app.use(express.json({ limit: "100mb" }));
 
 const corsOption = {
@@ -53,12 +43,10 @@ const corsOption = {
 };
 app.use(cors(corsOption));
 
-// Image Path
-
 app.use("/api", router);
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-// Image Path
+
 app.use("/assets", express.static(path.join(__dirname, "..", "app", "assets")));
 
 /* create server */
@@ -68,7 +56,6 @@ const server = http.createServer(app);
 // socketInitialize(server);
 
 const port = process.env.PORT || 8010;
-
 server.listen(port, () => {
   // eslint-disable-next-line no-console
   console.log(`Example app listening on port ${port}!`);

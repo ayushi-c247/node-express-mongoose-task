@@ -1,18 +1,19 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const { body, validationResult } = require("express-validator");
+const { validationResult } = require("express-validator");
 const message = require("../../utils/constant")
 const userModel = require("../../models/user");
 
 
+//User Registration
 const registration = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json(errors.array());
   }
   try {
-    const { name, email, password, phone, gender, hobbie, age, status, role } = req.body
+    const { name, email, password, phone, gender, age, status, role } = req.body
     if (role === "user") {
       let myEmail = await userModel.findOne({
         email
@@ -34,7 +35,6 @@ const registration = async (req, res) => {
         name,
         age,
         gender,
-        hobbie,
         email,
         password: encryptPassword(password),
         phone,
@@ -62,9 +62,7 @@ const registration = async (req, res) => {
 };
 
 
-
-//********************************Login-user */
-
+//User Login */
 const login = async (req, res) => {
   const errors = validationResult(req);
 
@@ -73,44 +71,34 @@ const login = async (req, res) => {
       errors: errors.array()
     });
   }
-
   try {
-
     const { email, password, role } = req.body;
-
     if (role === "user") {
-
-      let user = await userModel.findOne({
-        email
-      });
+      let user = await userModel.findOne({ email, status: "Active" });
       if (!user) {
         return res.status(400).json({
-          message: message.USER_NOT_EXITS
+          message: message.USER_NOT_EXITS_LOGIN
         });
       }
-      if (user.status === "Active") {
-        const isMatch = await bcrypt.compareSync(password, user.password);
-        console.log("ismatch", isMatch);
-        if (!isMatch) {
-          return res.status(400).json({
-            message: message.PASSWORD
-          });
+      const isMatch = await bcrypt.compareSync(password, user.password);
+      console.log("ismatch", isMatch);
+      if (!isMatch) {
+        return res.status(400).json({
+          message: message.PASSWORD
+        });
+      }
+      const access = {
+        user: {
+          id: user._id,
+          role: user.role,
         }
-        const access = {
-          user: {
-            id: user._id,
-            role: user.role,
-          }
-        };
-        let token = jwt.sign(access, "config.secret", {
-          expiresIn: 86400 // expires in 24 hours
-        });
-        console.log("token", token);
+      };
+      let token = jwt.sign(access, "config.secret", {
+        expiresIn: 86400 // expires in 24 hours
+      });
+      console.log("token", token);
 
-        return res.json({ message: message.LOGIN_SUCCESS, token: token });
-      } else {
-        return res.status(500).json({ message: message.USER_STATUS_FAILD })
-      }
+      return res.json({ message: message.LOGIN_SUCCESS, token: token });
     } else {
       return res.status(500).json({ message: message.USER_FAILD })
     }
@@ -120,70 +108,47 @@ const login = async (req, res) => {
   }
 };
 
-//****************************view-profile */
-
-
+//view-profile of user */
 const viewProfile = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json(errors.array());
-  }
   try {
-    // req.user is getting fetched from Middleware after token authentication
     const user = await userModel.findById(req.user.id);
-    console.log("keyprofile=", user);
-    if (!user) {
-      return res.status(500).json({ error: message.USER_NOT_EXITS });
-    } else {
-      console.log("profile user");
-      return res.status(200).json({ message: message.MY_PROFILE, user: user });
-    }
+    return res.status(200).json({ message: message.MY_PROFILE, user: user });
   } catch (error) {
     return res.status(500).json({ error: message.VIEW_PROFILE_ERROR_MESSAGE });
   }
 };
 
-//*****************Update-profile */
-
+//Update-profile of user*/
 const updateProfile = async (req, res) => {
   const errors = validationResult(req);
-
   if (!errors.isEmpty()) {
     return res.status(400).json({
       errors: errors.array()
     });
   }
   try {
-    console.log("In updateprofile");
-
-    const { name, age, gender, hobbie, } = req.body
+    const { name, age, gender, } = req.body
     const userupdates = await userModel.findById(req.user.id);
-    if (!userupdates) {
-      return res.status(500).json({ error: message.USER_NOT_EXITS });
-    } else {
-      var file = req.files;
-      var updateddata = {
-        age: age || userupdates.age,
-        hobbie: hobbie || userupdates.hobbie,
-        name: name || userupdates.name,
-        gender: gender || userupdates.gender,
-        image: file[0].path || userupdates.image
-      }
-      let updatedata = await userModel.findByIdAndUpdate(userupdates, updateddata, function (
-        err,
-        result
-      ) {
-        if (err) {
-          res.send(err);
-        } else {
-          res.json(result);
-        }
-      });
-      console.log("update", updatedata);
-      return res.json({ message: message.USER_UPDATE, updatedata });
+    console.log("injkknjk", req.files);
 
-
+    const myprofileImage = req.files && req.files.myfile && req.files.myfile.path ? req.files.myfile.path : null;
+    console.log("myprofileImage", myprofileImage);
+    var updateddata = {
+      age: age ? age : userupdates.age,
+      name: name ? name : userupdates.name,
+      gender: gender ? gender : userupdates.gender,
+      image: myprofileImage ? myprofileImage : userupdates.image
     }
+    let updatedata = await userModel.findByIdAndUpdate(userupdates, updateddata, function (
+      err,
+      result
+    ) {
+      if (err) {
+        res.send(err);
+      }
+    });
+    console.log("update", updatedata);
+    return res.json({ message: message.USER_UPDATE, updatedata });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: message.UPDATE_PROFILE_ERROR_MESSAGE });
@@ -191,93 +156,38 @@ const updateProfile = async (req, res) => {
 };
 
 
-
-//*****************delete-profile */
-
+//Delete-profile of user*/
 const deleteProfile = async (req, res) => {
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      errors: errors.array()
-    });
-  }
   try {
-    console.log("delete");
-    const user = await userModel.findById(req.user.id);
-    if (!user) {
-      return res.status(200).json({
-        message: message.DELETE_PROFILE_FAILD,
-      });
-    } else {
-      await userModel.deleteOne({ _id: req.user.id });
-      return res.status(200).json({
-        message: message.DELETE_PROFILE,
-      });
-    }
-
+    await userModel.deleteOne({ _id: req.user.id });
+    return res.status(200).json({
+      message: message.DELETE_PROFILE,
+    });
   } catch (error) {
     console.log("delete error", error);
     return res.status(500).json({ error: message.DELETE_PROFILE_ERROR_MESSAGE });
   }
 };
 
-//************************ delete-Profile-Image*/
 
-
+//Delete Profile Image of user*/
 const deleteProfileImage = async (req, res) => {
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      errors: errors.array()
-    });
-  }
   try {
-    console.log("deleteProfileImage");
-    const user = await userModel.findById(req.user.id);
-    if (!user) {
-      return res.status(500).json({
-        message: message.DELETE_PROFILE_FAILD,
-      });
-    } else {
-      var imagenull = {
-        image: null
-      }
-      var userdetails = await userModel.updateOne({ _id: req.user.id }, imagenull);
-      return res.status(200).json({
-        message: message.DELETE_PROFILE_DELETE, userdetails: userdetails
-      });
+    let imagenull = {
+      image: null
     }
-
+    var userdetails = await userModel.updateOne({ _id: req.user.id }, imagenull);
+    return res.status(200).json({
+      message: message.DELETE_PROFILE_DELETE, userdetails: userdetails
+    });
   } catch (error) {
     console.log("user delete error", error);
     return res.status(500).json({ error: message.DELETE_IMAGE_ERROR_MESSAGE });
   }
 };
 
-const userAndBlog = async (req, res) => {
-  try {
-    console.log("userAndBlog");
-    const user = await userModel.findById(req.user.id);
-    console.log("In delete ", user);
-    if (!user) {
-      return res.status(200).json({
-        message: message.DELETE_PROFILE_FAILD,
-      });
-    }
-    const blogdata = userModel.findOne({ _id: req.user.id })
-      .populate('blogs').exec((err, posts) => {
-        console.log("Populated User ", blogdata);
-      })
 
-  } catch (error) {
-    console.log("userAndBlog", error);
-    return res.status(500).json({ error: message.DELETE_IMAGE_ERROR_MESSAGE });
-  }
-
-}
-
-module.exports = { registration, login, viewProfile, deleteProfile, updateProfile, deleteProfileImage, userAndBlog };
+//module exports
+module.exports = { registration, login, viewProfile, deleteProfile, updateProfile, deleteProfileImage, };
 
 

@@ -12,4 +12,5 @@ router.patch("/updateBlog/:id", token, upload.fields([{ name: 'posterImage', max
 router.delete("/deleteBlog/:id", token, BlogController.deleteBlog);
 router.delete("/deleteAllBlogs", token, BlogController.deleteAllBlogs);
 router.get("/userAndBlog", token, BlogController.userAndBlog);
+
 module.exports = router;

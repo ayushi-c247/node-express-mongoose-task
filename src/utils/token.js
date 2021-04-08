@@ -1,37 +1,24 @@
-// import bcrypt from "bcrypt";
-// import crypto from "crypto";
-
-
-
-// let token;
-// if (user.role === 'admin') {
-//   token = jwt.sign({ _id, role: 'admin' }, process.env.JWT_SECRET);
-// } else {
-//   token = jwt.sign({ _id, role: 'user' }, process.env.JWT_SECRET);
-// }
-// user.token = token;
-// return user.save().then(() => {
-//   return token;
-// });
-const message = require("./constant")
-
-
+const message = require("./constant");
 const jwt = require("jsonwebtoken");
 
+const userModel = require("../models/user");
 
-module.exports = function (req, res, next) {
-
+module.exports = async (req, res, next) => {
   try {
+
     const token = req.header("Authorization");
-    console.log("authtoken == ", token);
+    console.log("authtoken =: ", token);
     if (!token) return res.status(401).json({ message: message.AUTH_ERROR });
-    const decoded = jwt.verify(token, "config.secret");
-    req.user = decoded.user
-    console.log("token", req.user);
-    //userId = decoded.user
-    //console.log("auth token==  ", userId);
-    //console.log("decoded", decoded);
-    return next();
+    else {
+      const decoded = jwt.verify(token, "config.secret");
+      req.user = decoded.user
+      const user = await userModel.findById(req.user.id);
+      if (!user) {
+        return res.status(500).json({ error: message.USER_NOT_EXITS, });
+      }
+      return next();
+    }
+
   } catch (e) {
     console.error(e);
     res.status(500).send({ message: message.INVALID_TOKEN });

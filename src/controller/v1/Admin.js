@@ -178,7 +178,7 @@ const display = async (req, res) => {
         {
             $group: {
                 _id: '$authorId',
-                blogid: { $addToSet: '$_id' },
+                blogid: { $addToSet: '$title' },
                 count: {
                     $sum: 1,
                 },
@@ -203,6 +203,7 @@ const display = async (req, res) => {
             $group: {
                 _id: '$blogId',
                 commentid: { $addToSet: '$_id' },
+                userId: { $addToSet: '$userId' },
                 count: {
                     $sum: 1,
                 },
@@ -233,6 +234,7 @@ const adminDashboard = async (req, res) => {
             $group: {
                 _id: '$authorId',
                 blogid: { $addToSet: '$title' },
+                mainId: { $addToSet: '$_id' },
                 count: {
                     $sum: 1,
                 },
@@ -245,11 +247,10 @@ const adminDashboard = async (req, res) => {
         {
             $group: {
                 _id: '$userId',
-                commentid: { $addToSet: '$blogId' },
+                commentid: { $addToSet: '$_id' },
                 count: {
                     $sum: 1,
                 },
-
             },
         },
     ])
@@ -259,6 +260,7 @@ const adminDashboard = async (req, res) => {
             $group: {
                 _id: '$blogId',
                 commentid: { $addToSet: '$_id' },
+                userId: { $addToSet: '$userId' },
                 count: {
                     $sum: 1,
                 },
@@ -297,18 +299,3 @@ module.exports = { adminLogin, homePage, login, deleteUser, display, userStatusU
 
 
 
-// <% if(blog) { %>
-//     <!-- for blog[0]._id===users[i]._id -->
-//     <!-- for  blog.length-->
-
-//     <% for(var j=0; j<blog.length; j++) { %>
-//         <% if(blog[j]._id==users[i]._id) { %>
-
-//             <% for(var k=0; k<blog[j].blogid.length; k++) { %>
-//                 <%=blog[j].blogid[k]%>
-
-//                     <% } %>
-//                         <% } else {%>
-//                             <% } %>
-//                                 <% } %>
-//                                     <% } %>
