@@ -177,10 +177,40 @@ const userAndBlog = async (req, res) => {
     }
 }
 
-
+//likes dislikes
+const likesDislikes = async (req, res) => {
+    try {
+        const { likes, dislikes, id } = req.body
+        const blogdata = await blogModel.find({ _id: id });
+        if (likes == 'true') {
+            blogdata.likes++
+        }
+        else if (likes == 'false') {
+            blogdata.likes++;
+        }
+        else if (dislikes == "false") {
+            blogdata.dislikes--;
+            blogdata.likes--;
+        }
+        let updatedData = {
+            likes: blogdata.likes,
+            dislikes: blogdata.dislikes
+        }
+        await blogModel.updateOne({ _id: id }, updatedData, function (err, result) {
+            if (err) {
+                return res.status(500).json({ error: message.LIKES_DISLIKES_ERR });
+            } else {
+                return res.status(200).json({ error: message.LIKES_DISLIKES_SUCCESS });
+            }
+        })
+    } catch (error) {
+        console.log("userAndBlog", error);
+        return res.status(500).json({ error: message.LIKES_DISLIKES_ERROR });
+    }
+}
 
 // Module exports
-module.exports = { userBlog, viewAllBlog, viewUserBlog, updateBlog, deleteBlog, deleteAllBlogs, userAndBlog }
+module.exports = { userBlog, viewAllBlog, viewUserBlog, updateBlog, deleteBlog, deleteAllBlogs, userAndBlog, likesDislikes }
 
 
 

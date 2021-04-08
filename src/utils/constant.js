@@ -74,7 +74,10 @@ const message = {
     DELETE_COMMENT_FAILD: "You can not delete other's comments!!",
     UPDATE_COMMENT_FAILD: "You can not update other's comments!!",
     DELETE_ALL_COMMENT_FAILD: "Delete All comments faild!!",
-    DELETE_ALL_COMMENT_INCORRECT: "Id is null please provide correct Id"
+    DELETE_ALL_COMMENT_INCORRECT: "Id is null please provide correct Id",
+    LIKES_DISLIKES_ERR: "Could not likes and dislikes",
+    LIKES_DISLIKES_ERROR: "Could not likes and dislikes please check try block",
+    LIKES_DISLIKES_SUCCESS: "Sucessfully!!!!!!!!!!!!!!!!!!!",
 }
 
 
