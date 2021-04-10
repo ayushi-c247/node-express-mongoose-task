@@ -52,13 +52,13 @@ const RegistrationValidation = [
 
 ];
 
-const updateprofilevalidations = [
-  body("email")
+const updateProfileValidations = [
+  body("name")
     .not()
     .isEmpty()
-    .withMessage("Please enter email address.")
-    .trim()
-    .isEmail()
+    .withMessage("name contains only charactor"),
+  body("age").isBoolean(),
+  check('gender').isIn(['Male', 'Female', 'Other']),
 ];
 const blogvalidations = [
   body("authorID")
@@ -67,5 +67,38 @@ const blogvalidations = [
     .trim()
     .withMessage("Your ID is not Valid"),
 ];
-
-module.exports = { LoginValidation, RegistrationValidation, changePwdvalidation, updateprofilevalidations, blogvalidations };
+const commentValidations = [
+  body("userId")
+    .not()
+    .isEmpty()
+    .trim()
+    .withMessage("Your ID is not Valid"),
+  body("blogId")
+    .not()
+    .isEmpty()
+    .trim()
+    .withMessage("Your ID is not Valid"),
+  body("body")
+    .not()
+    .isEmpty()
+    .trim()
+    .withMessage("comment required!!!!!"),
+];
+const AdminLoginValidation = [
+  body("email")
+    .not()
+    .isEmpty()
+    .withMessage("Please enter email address.")
+    .trim()
+    .isEmail()
+    .withMessage("Please enter valid email address"),
+  body("password")
+    .not()
+    .isEmpty()
+    .withMessage("Please enter password.")
+    .trim()
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 8 character long."),
+  check('role').isIn(['admin', 'user']),
+];
+module.exports = { LoginValidation, RegistrationValidation, commentValidations, changePwdvalidation, updateProfileValidations, blogvalidations, AdminLoginValidation };

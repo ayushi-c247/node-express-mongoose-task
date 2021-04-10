@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const { body, validationResult } = require("express-validator");
+const { validationResult } = require("express-validator");
 const message = require("../../utils/constant")
 const adminModel = require("../../models/admin");
 const userModel = require("../../models/user");
@@ -63,11 +63,13 @@ const adminLogin = async (req, res) => {
 
 
 
-//************************************************show user details by admin  */
-
+//show user details by admin  
 const homePage = async (req, res) => {
     res.render("index.ejs", { emailValue: "", emailerr: " ", passworderr: " ", emailValue: "", users: "", blog: "", comments: " ", totalBlogs: "", comment: "", blogByComment: "" });
 }
+
+
+//login admin
 const login = async (req, res) => {
     var flag = 0;
 
@@ -78,18 +80,25 @@ const login = async (req, res) => {
     };
     var adminDetail = await adminModel.findOne({ email: email });
     console.log("admin deatails ", adminDetail);
-    console.log("=====================", response);
-    if (email == "") {
+    console.log("response =:", response);
+    if (email == "" && password == "") {
         var emailerr = "Please Enter Email";
+        var passworderr = "Please Enter Password";
         console.log("please Enter Email");
         flag = 1;
     }
-    if (password == "") {
+    else if (adminDetail == null) {
+        var emailerr = "Please Enter correct Email";
+        var passworderr = "Please Enter Password";
+        console.log("please Enter Email");
         flag = 1;
+    }
+    else if (password == "") {
         var passworderr = "Please Enter Password";
         console.log("please enter password");
+        flag = 1;
     }
-    if (email == null) {
+    else if (email == null) {
         flag = 1;
         var emailValue = "Please enter correct email";
 
@@ -100,24 +109,23 @@ const login = async (req, res) => {
             emailerr: emailerr,
             passworderr: passworderr,
         });
-
     }
-
     const isMatch = await bcrypt.compareSync(password, adminDetail.password);
     console.log("ismatch", isMatch);
     if (isMatch) {
         res.redirect(`${process.env.hostPath}v1/admin/adminDashboard`);
     } else {
         res.render('index.ejs', {
-            emailValue: email,
+            emailValue: response.email,
             emailerr: "",
-            passworderr: "Password incorrect please enter correct password",
+            passworderr: "Please enter correct password",
         });
     }
 }
 
-//*******************User Status Update */
 
+
+//User Status Update */
 const userStatusUpdate = async (req, res) => {
 
     const id = req.params.id;
@@ -152,8 +160,7 @@ const userStatusUpdate = async (req, res) => {
 }
 
 
-//********************** Delete User*/
-
+// Delete User*/
 const deleteUser = async (req, res) => {
     const id = req.params.id;
     const blog = await blogModel.find({ authorId: id });
@@ -170,6 +177,7 @@ const deleteUser = async (req, res) => {
 }
 
 
+//Display data*/
 const display = async (req, res) => {
     const users = await userModel.find();
     const comments = await commentModel.countDocuments();
@@ -222,8 +230,8 @@ const display = async (req, res) => {
 }
 
 
-//*************************admin Dashboard */
 
+//admin Dashboard */
 const adminDashboard = async (req, res) => {
     const users = await userModel.find();
     const comments = await commentModel.countDocuments();
@@ -248,6 +256,7 @@ const adminDashboard = async (req, res) => {
             $group: {
                 _id: '$userId',
                 commentid: { $addToSet: '$_id' },
+                body: { $addToSet: '$body' },
                 count: {
                     $sum: 1,
                 },
@@ -279,10 +288,9 @@ const adminDashboard = async (req, res) => {
         totalBlogs: totalBlogs,
         blogByComment: groupCommentByBlog
     });
-
-
-
 }
+
+
 module.exports = { adminLogin, homePage, login, deleteUser, display, userStatusUpdate, adminDashboard }
 
 

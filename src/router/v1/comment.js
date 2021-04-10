@@ -3,8 +3,10 @@ const router = express.Router();
 
 const token = require("../../utils/token")
 const { CommentController } = require("../../controller/v1");
+const { AuthValidator } = require("../../validators");
 
-router.post("/addComment", token, CommentController.addComment);
+
+router.post("/addComment", token, AuthValidator.commentValidations, CommentController.addComment);
 router.get("/viewAllComment", token, CommentController.viewAllComment);
 router.get("/viewBlogComment/:id", token, CommentController.viewBlogComment);
 router.patch("/updateComment/:id", token, CommentController.updateComment);

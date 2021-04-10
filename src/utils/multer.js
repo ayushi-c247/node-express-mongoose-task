@@ -1,7 +1,4 @@
-
 const multer = require("multer");
-
-
 
 var storage = multer.diskStorage({
     destination: function (req, file, callback) {
@@ -10,6 +7,7 @@ var storage = multer.diskStorage({
     filename: function (req, file, callback) {
         callback(null, file.originalname);
     },
-
 });
+
+//module exports
 module.exports = multer({ storage: storage });

@@ -1,11 +1,12 @@
-const message = require("./constant");
 const jwt = require("jsonwebtoken");
 
 const userModel = require("../models/user");
+const message = require("./constant");
 
+//module exports
 module.exports = async (req, res, next) => {
-  try {
 
+  try {
     const token = req.header("Authorization");
     console.log("authtoken =: ", token);
     if (!token) return res.status(401).json({ message: message.AUTH_ERROR });
@@ -18,7 +19,6 @@ module.exports = async (req, res, next) => {
       }
       return next();
     }
-
   } catch (e) {
     console.error(e);
     res.status(500).send({ message: message.INVALID_TOKEN });

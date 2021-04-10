@@ -5,7 +5,6 @@ const adminModel = require("../models/admin");
 const admin = async () => {
 
   const result = await adminModel.find({ email: "admin@gmail.com" });
-  //console.log("my admin result", result)
   var password = "Ayushi@77";
   const generateSalt = (length = 10) => bcrypt.genSaltSync(length);
   const encryptPassword = (password) => {

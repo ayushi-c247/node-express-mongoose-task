@@ -3,11 +3,10 @@ const router = express.Router();
 
 const token = require("../../utils/token")
 const { AdminController } = require("../../controller/v1");
+const { AuthValidator } = require("../../validators");
 
 
-
-
-router.post("/adminlogin", AdminController.adminLogin);
+router.post("/adminlogin", AuthValidator.AdminLoginValidation, AdminController.adminLogin);
 
 router.get("/login", AdminController.homePage);
 router.post("/dashboard", AdminController.login);

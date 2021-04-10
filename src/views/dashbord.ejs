@@ -35,9 +35,6 @@
                     </td>
                     <td>
                         <% if(blog) { %>
-                            <!-- for blog[0]._id===users[i]._id -->
-                            <!-- for  blog.length-->
-
                             <% for(var j=0; j<blog.length; j++) { %>
                                 <% if(blog[j]._id==users[i]._id) { %>
 
@@ -53,7 +50,31 @@
 
                     </td>
                     <td>
-
+                        <% if(blog) { %>
+                            <% if( blogByComment) { %>
+                                <% for(var j=0; j<blog.length; j++) { %>
+                                    <% if(blog[j]._id==users[i]._id) { %>
+                                        <% for(var k=0; k<blog[j].mainId.length; k++) { %>
+                                            <% for(var l=0; l<blogByComment.length; l++) { %>
+                                                <% if(blog[j].mainId[k]==blogByComment[l]._id) { %>
+                                                    <%=l+1%>
+                                                        <%=blog[j].blogid[k]%>
+                                                            <br>
+                                                            <% for(var m=0; m<blogByComment[l].commentid.length; m++) {
+                                                                %>
+                                                                <%=m+1%>
+                                                                    <%=blogByComment[l].commentid[m]%>
+                                                                        <br>
+                                                                        <% } %>
+                                                                            <% } else {%>
+                                                                                <% } %>
+                                                                                    <% } %>
+                                                                                        <% } %>
+                                                                                            <% } else {%>
+                                                                                                <% } %>
+                                                                                                    <% } %>
+                                                                                                        <% } %>
+                                                                                                            <% } %>
                     </td>
                     <td>
                         <% if(comment) { %>
@@ -61,44 +82,33 @@
                                 <% if(comment[j]._id==users[i]._id) { %>
                                     <% for(var k=0; k<comment[j].commentid.length; k++) { %>
                                         <%=comment[j].commentid[k]%>
-
                                             <% } %>
                                                 <% } else {%>
                                                     <% } %>
                                                         <% } %>
                                                             <% } %>
                     </td>
-
                     <td>
                         <button type="button" class="btn btn-danger"
                             onclick="window.location='/api/v1/admin/userStatusUpdate/<%= users[i]._id %>'">
                             <%= users[i].status%>
                         </button>
                     </td>
-
-
-
                     <td>
                         <button type="button" class="btn btn-info"
                             onclick="window.location='/api/v1/admin/delete/<%= users[i]._id %>'">
                             Delete
                         </button>
-
                     </td>
-
                     <% } %>
                         <% } else { %>
                             No Record Found
                             <% } %>
                                 <td>
-
                                     <%= totalBlogs%>
-
                                 </td>
                                 <td>
-
                                     <%= comments%>
-
                                 </td>
                 </tr>
         </tbody>

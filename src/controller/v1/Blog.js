@@ -182,15 +182,19 @@ const likesDislikes = async (req, res) => {
     try {
         const { likes, dislikes, id } = req.body
         const blogdata = await blogModel.find({ _id: id });
-        if (likes == 'true') {
+        if (likes === 'true') {
             blogdata.likes++
         }
-        else if (likes == 'false') {
-            blogdata.likes++;
-        }
-        else if (dislikes == "false") {
-            blogdata.dislikes--;
+        else if (likes === 'false') {
             blogdata.likes--;
+        }
+        else if (dislikes === "true") {
+            blogdata.dislikes++;
+            blogdata.likes--;
+        }
+        else if (dislikes === "false") {
+            blogdata.dislikes--;
+            blogdata.likes++;
         }
         let updatedData = {
             likes: blogdata.likes,
