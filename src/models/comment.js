@@ -11,7 +11,7 @@ const commentSchema = new Schema(
             type: String,
         },
         blogId: {
-            type: String, ref: 'Blog',
+            type: String,
         },
     },
     {

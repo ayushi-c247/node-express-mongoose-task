@@ -115,7 +115,6 @@ const login = async (req, res) => {
         console.log("ismatch", isMatch);
         if (isMatch) {
             //****************** */
-            req.session.user = response;
             res.redirect(`${process.env.hostPath}v1/admin/adminDashboard`);
         } else {
             res.render('index.ejs', {

@@ -10,6 +10,7 @@ const BlogSchema = mongoose.Schema({
     },
     authorId: {
         type: String,
+        ref: "User",
     },
     createdAt: {
         type: Date,
@@ -40,10 +41,6 @@ const BlogSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
-    // comments: [{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Comment"
-    // }],
 });
 
 module.exports = mongoose.model('Blog', BlogSchema);

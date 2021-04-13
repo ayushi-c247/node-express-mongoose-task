@@ -134,7 +134,29 @@ const deleteAllBlogs = async (req, res) => {
 const userAndBlog = async (req, res) => {
     try {
 
-
+        const userlookup = await userModel.aggregate([
+            {
+                $lookup: {
+                    from: "blogs",
+                    localField: "id",
+                    foreignField: "id",
+                    as: "blog"
+                }
+            },
+            {
+                $unwind: "$blog"
+            },
+            {
+                $lookup: {
+                    from: "comments",
+                    localField: "blogs._id",
+                    foreignField: "blogid",
+                    as: "blog.comment"
+                }
+            },
+        ]);
+        console.log("userlookup", userlookup);
+        return res.status(500).json({ userlookup });
     } catch (error) {
         console.log("userAndBlog", error);
         return res.status(500).json({ error: message.DELETE_IMAGE_ERROR_MESSAGE });

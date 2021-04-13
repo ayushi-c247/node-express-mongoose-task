@@ -19,10 +19,7 @@ const userSchema = new Schema({
     default: "Inactive",
     enum: ["Inactive", "Pending", "Active"],
   },
-  blogs: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Blog"
-  }]
+
 });
 
 module.exports = mongoose.model("User", userSchema)

@@ -8,7 +8,7 @@ const sessionChecker = require("../../utils/session")
 
 router.post("/adminlogin", AuthValidator.AdminLoginValidation, AdminController.adminLogin);
 
-router.get("/login", sessionChecker, AdminController.homePage);
+router.get("/login", AdminController.homePage);
 router.get("/logout", AdminController.logout);
 router.post("/dashboard", AdminController.login);
 router.get("/delete/:id", AdminController.deleteUser);
