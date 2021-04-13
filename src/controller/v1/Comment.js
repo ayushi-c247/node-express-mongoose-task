@@ -1,16 +1,16 @@
-
 // const { body, validationResult } = require("express-validator");
+
 const blogModel = require("../../models/blog");
 const userModel = require("../../models/user");
 const message = require("../../utils/constant");
 const commentModel = require("../../models/comment");
 
 
-//****************** Add Comments */
+//Add Comments */
 const addComment = async (req, res) => {
     try {
         const { body, blogId, } = req.body;
-        const user = await userModel.findById({ _id: req.user.id });
+        //const user = await userModel.findById({ _id: req.user.id });
         const findBlog = await blogModel.findOne({ _id: blogId })
         if (findBlog) {
             if (req.user.id == findBlog.authorId) {
@@ -105,36 +105,7 @@ const deleteComment = async (req, res) => {
 
 }
 
-// Delete All Comments of blog of particular user  */
-// const deleteAllComment = async (req, res) => {
-//     try {
-//         const blog_id = req.params.id;
-//         const findBlog = await commentModel.find({ userId: req.user.id });
-//         console.log("blog_id ", blog_id);
-//         console.log("findBlog", findBlog);
-//         if (findBlog && findBlog.length) {
-//             console.log("inside idddddddd");
-//             for (let index = 0; index < findBlog.length; index++) {
-//                 if (findBlog[index].blogId === blog_id) {
-//                     let comment_id = findBlog[index]._id
-//                     console.log("comment_id", comment_id);
-//                     await commentModel.findByIdAndDelete({ _id: comment_id })
-//                 } else {
 
-//                     return res.status(500).json({ message: message.DELETE_ALL_COMMENT_FAILD, });
-//                 }
-//                 return res.status(200).json({ message: message.DELETE_ALL_COMMENT_SUCCESS, });
-//             }
-//         } else {
-//             console.log("dnfdkjvnfgkjnfdgjfdngjvfdgnfdjgbdfhgfjdhgjdfgdfgdfjgfdjgdfjghdfgdfgfdgbdcndvv");
-//             return res.status(500).json({ message: message.DELETE_ALL_COMMENT_INCORRECT, });
-//         }
-//     } catch (error) {
-//         console.log("delete all comment catch =", error);
-//         return res.status(500).json({ error: message.DELETE_ALL_COMMENT_CATCH });
-//     }
-
-// }
 
 
 module.exports = { addComment, viewAllComment, deleteComment, updateComment, viewBlogComment }

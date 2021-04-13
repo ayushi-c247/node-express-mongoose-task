@@ -2,6 +2,9 @@ var express = require("express");
 var http = require("http");
 var cors = require("cors");
 var path = require("path");
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var morgan = require('morgan');
 var dotenv = require("dotenv");
 var { connect } = require("mongoose");
 
@@ -46,6 +49,31 @@ app.use(cors(corsOption));
 app.use("/api", router);
 app.use(express.static(path.join(__dirname, "..", "public")));
 
+//set morgan to log info about our requests for development use.
+app.use(morgan('dev'));
+
+//cookie: initialize cookie-parser to allow us access the cookies stored in the browser. 
+app.use(cookieParser());
+
+//session: initialize express-session to allow us track the logged-in user across sessions.
+app.use(session({
+  key: 'user_sid',
+  secret: 'somerandonstuffs',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    expires: 600000
+  }
+}));
+
+//This middleware will check if user's cookie is still saved in browser and user is not set, then automatically log the user out.
+// This usually happens when you stop your express server after login, your cookie still remains saved in the browser.
+app.use((req, res, next) => {
+  if (req.cookies.user_sid && !req.session.user) {
+    res.clearCookie('user_sid');
+  }
+  next();
+});
 
 app.use("/assets", express.static(path.join(__dirname, "..", "app", "assets")));
 

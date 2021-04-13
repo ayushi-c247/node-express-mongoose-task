@@ -46,12 +46,12 @@ const RegistrationValidation = [
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 character long."),
   body("age").isBoolean(),
+  body("phone").isNumeric(),
   check('gender').isIn(['Male', 'Female', 'Other']),
   check('status').isIn(["Inactive", "Pending", "Active"]),
   check('role').isIn(['admin', 'user']),
 
 ];
-
 const updateProfileValidations = [
   body("name")
     .not()
@@ -61,11 +61,17 @@ const updateProfileValidations = [
   check('gender').isIn(['Male', 'Female', 'Other']),
 ];
 const blogvalidations = [
-  body("authorID")
+  body("title")
     .not()
-    .isEmpty()
     .trim()
-    .withMessage("Your ID is not Valid"),
+    .isEmpty()
+    .withMessage("Your title is empty please provide title"),
+  body("body")
+    .not()
+    .trim()
+    .isEmpty()
+    .withMessage("Your blog body is empty"),
+
 ];
 const commentValidations = [
   body("userId")

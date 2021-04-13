@@ -17,16 +17,16 @@ const BlogSchema = mongoose.Schema({
     },
     body: {
         type: String,
-        required: true,
         minlength: 24,
         maxlength: 13468,
-        trim: true
+        trim: true,
+        required: true,
     },
     posterimage: {
         type: String,
     },
     thumbnail: {
-        type: String
+        type: Array,
     },
     likes: {
         type: Number,

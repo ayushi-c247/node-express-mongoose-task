@@ -129,9 +129,9 @@ const updateProfile = async (req, res) => {
   try {
     const { name, age, gender, } = req.body
     const userupdates = await userModel.findById(req.user.id);
-    console.log("injkknjk", req.files);
-
-    const myprofileImage = req.files && req.files.myfile && req.files.myfile.path ? req.files.myfile.path : null;
+    console.log("req.files =:", req.files);
+    console.log("req.files.length", req.files.length);
+    const myprofileImage = req.files && req.files.length && req.files[0].path ? req.files[0].path : null;
     console.log("myprofileImage", myprofileImage);
     var updateddata = {
       age: age ? age : userupdates.age,

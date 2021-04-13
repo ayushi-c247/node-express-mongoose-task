@@ -78,6 +78,8 @@ const message = {
     LIKES_DISLIKES_ERR: "Could not likes and dislikes",
     LIKES_DISLIKES_ERROR: "Could not likes and dislikes please check try block",
     LIKES_DISLIKES_SUCCESS: "Sucessfully!!!!!!!!!!!!!!!!!!!",
+    LIKES_DISLIKES_FAILD: "You can not like and dislike your own post",
+    LIKES_DISLIKES_NOT_AT_TIME: "You can not likes and dislikes at time",
 }
 
 

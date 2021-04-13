@@ -8,17 +8,17 @@ const message = require("../../utils/constant");
 
 //Add Blog */
 const userBlog = async (req, res) => {
-    console.log("i am inside user blog");
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(422).json(errors.array());
     }
     try {
+        console.log("i am inside user blog");
         const { title, body, } = req.body;
         const posterImage = req.files.posterImage[0];
         var thumbnailImage = req.files.thumbnailImage.map(file => file.path);
 
-        console.log("treq.files", posterImage);
+        console.log("req.files", posterImage);
         console.log("my thumbnail path", thumbnailImage);
         console.log("my thumbnailimage", JSON.stringify(thumbnailImage));
         let newblog = await blogModel.create({
@@ -74,21 +74,15 @@ const updateBlog = async (req, res) => {
         const findAllBlog = await blogModel.findOne({ authorId: req.user.id, _id: id })
         console.log("findAllBlog", findAllBlog);
         if (findAllBlog) {
-            console.log("findAllBlogcdndsjfsdjfhsdjfhsdjfhsdjfsbdhjsdghsgsdhgsdjhhjb",);
             console.log("req.files", req.files);
             const posterImage = req.files && req.files.posterImage && req.files.posterImage.length && req.files.posterImage[0] && req.files.posterImage[0].path ? req.files.posterImage[0].path : null;
-            // const thumbnailImage = req.files && req.files.thumbnailImage && req.files.thumbnailImage.length ? req.files.thumbnailImage.map(file => file.path) : null;
             const thumbnailImage = req.files && req.files.thumbnailImage && req.files.thumbnailImage.length && req.files.thumbnailImage.map(file => file) && req.files.thumbnailImage.map(file => file.path) ? req.files.thumbnailImage.map(file => file.path) : null;
-            const thumbnail = JSON.stringify(thumbnailImage)
-            const thumbnailStringify = JSON.stringify(JSON.parse(findAllBlog.thumbnail));
-            console.log(" thumbnailStringify", thumbnailStringify);
-            console.log(" thumbnail)", thumbnail);
-
+            console.log(" thumbnailImage=:", thumbnailImage);
             var updateData = {
                 title: title ? title : findAllBlog.title,
                 body: body ? body : findAllBlog.body ? findAllBlog.body : '',
                 posterimage: posterImage ? posterImage : findAllBlog.posterimage ? findAllBlog.posterimage : '',
-                thumbnail: thumbnail ? thumbnail : thumbnailStringify ? thumbnailStringify : ''
+                thumbnail: thumbnailImage ? thumbnailImage : findAllBlog.thumbnail ? findAllBlog.thumbnail : ''
             }
             await blogModel.updateOne({ _id: id }, { $set: updateData }, { new: true });
             return res.status(200).send({ message: message.BLOG_UPDATE, updateData });
@@ -135,41 +129,11 @@ const deleteAllBlogs = async (req, res) => {
 };
 
 
+
 // apply lookup and populate to show users details with its blogs and comments
 const userAndBlog = async (req, res) => {
     try {
-        console.log("userAndBlog");
-        const user = await userModel.findById(req.user.id);
-        console.log("In delete ", user);
-        if (!user) {
-            return res.status(200).json({
-                message: message.DELETE_PROFILE_FAILD,
-            });
-        }
-        const blogdata = await blogModel.find({ authorId: req.user.id })
-        const userblogadata = await userModel.findById({ _id: req.user.id })
-        userblogadata.blogs.splice(blogdata);
-        for (let index = 0; index < blogdata.length; index++) {
-            userblogadata.blogs.push(blogdata[index]);
-        }
-        //lookup
-        const blog = await blogModel.aggregate([
-            {
-                $lookup: {
-                    from: "comments",
-                    as: "Comments",
-                    foreignField: "id",
-                    localField: "blogId"
-                }
-            },
-        ])
-        await userblogadata.save()
-        //populate
-        const userblogadataa = await userModel.findById({ _id: req.user.id }).populate("blogs").exec()
-        console.log("userblogadataaass", userblogadataa, blog);
-        return res.status(200).json({
-            userAndBlogData: userblogadataa, blog
-        });
+
 
     } catch (error) {
         console.log("userAndBlog", error);
@@ -177,36 +141,49 @@ const userAndBlog = async (req, res) => {
     }
 }
 
+
+
+
 //likes dislikes
 const likesDislikes = async (req, res) => {
     try {
-        const { likes, dislikes, id } = req.body
-        const blogdata = await blogModel.find({ _id: id });
-        if (likes === 'true') {
-            blogdata.likes++
-        }
-        else if (likes === 'false') {
-            blogdata.likes--;
-        }
-        else if (dislikes === "true") {
-            blogdata.dislikes++;
-            blogdata.likes--;
-        }
-        else if (dislikes === "false") {
-            blogdata.dislikes--;
-            blogdata.likes++;
-        }
-        let updatedData = {
-            likes: blogdata.likes,
-            dislikes: blogdata.dislikes
-        }
-        await blogModel.updateOne({ _id: id }, updatedData, function (err, result) {
-            if (err) {
-                return res.status(500).json({ error: message.LIKES_DISLIKES_ERR });
+        const id = req.params.id;
+        const { likes, dislikes } = req.body
+        console.log("req.body", req.body.likes);
+        const blogdata = await blogModel.findOne({ _id: id });
+        console.log("blogdata", blogdata);
+        if (req.user.id == blogdata.authorId) {
+            return res.status(500).json({ error: message.LIKES_DISLIKES_FAILD });
+        } else {
+            if (likes !== undefined && dislikes !== undefined) {
+                return res.status(500).json({ error: message.LIKES_DISLIKES_NOT_AT_TIME });
             } else {
-                return res.status(200).json({ error: message.LIKES_DISLIKES_SUCCESS });
+                if (likes === true && blogdata.likes >= 0) {
+                    blogdata.likes++;
+                }
+                else if (likes === false && blogdata.likes >= 0) {
+                    blogdata.likes--;
+                }
+                else if (dislikes === true) {
+                    blogdata.dislikes++;
+                }
+                else if (dislikes === false) {
+                    blogdata.dislikes--;
+                }
+                let updatedData = {
+                    likes: blogdata.likes,
+                    dislikes: blogdata.dislikes
+                }
+                console.log("updatedData", updatedData);
+                await blogModel.updateOne({ _id: id }, updatedData, function (err, result) {
+                    if (err) {
+                        return res.status(500).json({ error: message.LIKES_DISLIKES_ERR });
+                    } else {
+                        return res.status(200).json({ message: message.LIKES_DISLIKES_SUCCESS });
+                    }
+                });
             }
-        })
+        }
     } catch (error) {
         console.log("userAndBlog", error);
         return res.status(500).json({ error: message.LIKES_DISLIKES_ERROR });
